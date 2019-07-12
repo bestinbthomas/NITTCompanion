@@ -1,0 +1,60 @@
+<resources>
+    <string name="app_name">NITT Companion</string>
+    <string name="next">next</string>
+    <string name="prev">previous</string>
+
+    <string name="sun">Sun</string>
+    <string name="mon">Mon</string>
+    <string name="tue">Tue</string>
+    <string name="wed">Wed</string>
+    <string name="thu">Thu</string>
+    <string name="fri">Fri</string>
+    <string name="sat">Sat</string>
+    <string name="events">Events</string>
+    <string name="alarm">Alarm</string>
+    <string name="to">To</string>
+    <string name="attended">Attended</string>
+    <string name="didyouattend">Did You Attend ?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="cancel">Cancel Event</string>
+    <string name="Reschedule">Reschedule Event</string>
+    <string name="Attendance">Attendance :</string>
+    <string name="save">Save</string>
+    <string name="type">Select Type :</string>
+    <string name="course">Select Course :</string>
+    <string name="attendenceWithPercent">%1$d %%</string>
+    <string name="courseStatusAttend">You need to attend %1$d more class</string>
+    <string name="courseStatusBunk">You can bunk %1$d class</string>
+    <string name="event_name">Event Name</string>
+    <string name="alert">Alert</string>
+    <string name="nextClass">Next Class</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="addEvent">Add Event</string>
+    <string name="notes">Notes</string>
+    <string name="Welcome">Welcome</string>
+
+    <string-array name="Months">
+        <item>January</item>
+        <item>February</item>
+        <item>March</item>
+        <item>April</item>
+        <item>May</item>
+        <item>June</item>
+        <item>July</item>
+        <item>August</item>
+        <item>September</item>
+        <item>October</item>
+        <item>November</item>
+        <item>December</item>
+    </string-array>
+    <string-array name="Event_types">
+        <item>Class</item>
+        <item>CT</item>
+        <item>End Sem</item>
+        <item>Assignment</item>
+        <item>Other</item>
+    </string-array>
+
+    </resources>

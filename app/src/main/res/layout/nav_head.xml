@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:background="@color/colorAccent"
+              android:layout_height="wrap_content"
+              android:gravity="bottom"
+              android:padding="15dp"
+>
+    <ImageButton android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:src="@drawable/ic_profile_pic"
+                 android:background="@android:color/transparent"
+    />
+    <TextView android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              tools:text="Hi, Bestin B Thomas"
+              android:textStyle="bold"
+              android:layout_marginTop="10dp"
+              android:id="@+id/UserName" android:fontFamily="@font/roboto"
+              android:textColor="@color/secondaryTextColor"/>
+    <TextView android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              tools:text="bestinbthomas@gmail.om"
+              android:id="@+id/UserEmail" android:fontFamily="@font/roboto"
+              android:textColor="@color/secondaryTextColor"/>
+
+
+</LinearLayout>

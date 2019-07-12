@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                                   xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                   android:orientation="vertical"
+                                                   android:layout_width="match_parent"
+                                                   android:layout_height="match_parent"
+                                                   android:id="@+id/EventDetailRoot">
+
+
+<androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="10dp"
+        android:id="@+id/CoursesRecycler"/>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        app:srcCompat="@drawable/ic_fab_src"
+        android:id="@+id/addCourseFAB"
+        android:focusable="true"
+        app:layout_anchorGravity="right|bottom"
+        app:layout_behavior="com.google.android.material.floatingactionbutton.FloatingActionButton$Behavior"
+        android:layout_marginEnd="20dp" android:layout_marginBottom="20dp" android:elevation="5dp"
+        android:backgroundTint="@color/colorAccent"
+        app:layout_anchor="@+id/CoursesRecycler"
+    />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

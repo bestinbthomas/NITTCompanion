@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                                   xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools" android:orientation="vertical"
+                                                   android:layout_width="match_parent"
+                                                   android:layout_height="match_parent" android:id="@+id/EventRoot">
+
+    <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/EventTime"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:id="@+id/cardView" android:paddingHorizontal="20dp" android:layout_margin="8dp">
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:id="@+id/EventTime"
+                    tools:text="5 :30 Pm"
+                    android:textColor="@color/black" android:visibility="visible"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5" app:layout_constraintEnd_toStartOf="@+id/EventName"
+                    app:layout_constraintBaseline_toBaselineOf="@+id/EventName" android:layout_marginStart="16dp"/>
+            <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content" android:id="@+id/EventName"
+                    tools:text="Maths Class"
+                    android:textAlignment="textStart" android:textSize="18sp"
+                    android:textColor="@color/black"
+                    app:layout_constraintStart_toEndOf="@+id/EventTime" app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintEnd_toEndOf="parent" android:layout_marginTop="16dp"
+                    app:layout_constraintTop_toTopOf="parent" android:layout_marginBottom="16dp"
+                    app:layout_constraintBottom_toBottomOf="parent" android:layout_marginStart="24dp"
+                    android:layout_marginEnd="16dp"/>
+            <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp" app:srcCompat="@drawable/red_dash" android:id="@+id/eventAlert"
+                    app:layout_constraintTop_toTopOf="@+id/EventName"
+                    app:layout_constraintBottom_toBottomOf="@+id/EventName"
+                    app:layout_constraintEnd_toEndOf="@+id/EventName" android:layout_marginEnd="16dp"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+</LinearLayout>

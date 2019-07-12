@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "782126181899",
+    "firebase_url": "https://nittcompanion.firebaseio.com",
+    "project_id": "nittcompanion",
+    "storage_bucket": "nittcompanion.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:782126181899:android:2132b182d1f68034",
+        "android_client_info": {
+          "package_name": "com.example.nittcompanion"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "782126181899-2pkvg7vjigh58rjd2fjs8v6vtcblbsv8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.nittcompanion",
+            "certificate_hash": "e4c60d66e872e8a182e1423889170d74d14f68ea"
+          }
+        },
+        {
+          "client_id": "782126181899-uvs90l8kip7ug5pjoortinq6hgp64vrh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZYBp3sXhkvPq_IPqcFrwz-qQihoDGXYI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "782126181899-uvs90l8kip7ug5pjoortinq6hgp64vrh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
