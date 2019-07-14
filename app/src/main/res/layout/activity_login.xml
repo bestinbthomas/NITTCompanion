@@ -4,6 +4,17 @@
                                                    android:layout_width="match_parent"
                                                    android:layout_height="match_parent"
                                                    android:background="@color/white">
+    <ImageView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:srcCompat="@drawable/signin"
+            android:id="@+id/imageView" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            android:contentDescription="@string/Welcome"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent" android:layout_marginTop="8dp"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintVertical_bias="1.0"/>
     <TextView android:layout_width="match_parent"
               android:layout_height="wrap_content"
               app:layout_constraintEnd_toEndOf="parent"
@@ -15,17 +26,8 @@
               android:background="@drawable/common_google_signin_btn_text_light_focused"
               android:textColor="@color/secondaryTextColor"
               android:id="@+id/LoginBtn"
-              android:layout_marginBottom="112dp" app:layout_constraintBottom_toBottomOf="@+id/imageView"/>
-    <ImageView
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:srcCompat="@drawable/signin"
-            android:id="@+id/imageView" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toBottomOf="parent" android:layout_marginTop="8dp"
-            app:layout_constraintTop_toTopOf="parent" app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintVertical_bias="1.0"/>
+              android:layout_marginBottom="112dp" app:layout_constraintBottom_toBottomOf="@+id/imageView"
+              android:gravity="center_horizontal|center_vertical"/>
     <TextView
             android:text="@string/Welcome"
             android:layout_width="wrap_content"

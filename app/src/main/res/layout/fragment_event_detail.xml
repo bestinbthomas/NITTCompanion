@@ -47,63 +47,55 @@
             app:layout_constraintBaseline_toBaselineOf="@+id/textView5"
             app:layout_constraintStart_toEndOf="@+id/textView5" android:layout_marginStart="8dp"
             android:fontFamily="@font/roboto" android:textColor="@color/black" android:textSize="16sp"/>
-    <TextView
+    <com.google.android.material.button.MaterialButton
             android:text="@string/Reschedule"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:id="@+id/EventCancell"
-            android:background="@drawable/button_back"
-            android:paddingStart="10dp" android:paddingEnd="10dp" android:paddingTop="6dp"
-            android:paddingBottom="6dp" android:textColor="@color/white"
-            app:layout_constraintBaseline_toBaselineOf="@+id/SaveEvent"
-            app:layout_constraintStart_toEndOf="@+id/SaveEvent" app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintEnd_toEndOf="parent" android:fontFamily="@font/roboto" android:textStyle="bold"/>
+            android:layout_height="wrap_content" android:id="@+id/RescheduleEvent"
+            app:layout_constraintBaseline_toBaselineOf="@+id/CancelEvent"
+            app:layout_constraintStart_toEndOf="@+id/CancelEvent" app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintEnd_toEndOf="parent"
+            style="@style/MyFilledButton"/>
     <TextView
             android:text="@string/cancel"
             android:layout_width="wrap_content"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_height="wrap_content" android:id="@+id/SaveEvent"
-            android:paddingStart="10dp" android:paddingEnd="10dp" android:paddingTop="6dp"
-            android:paddingBottom="6dp" android:textColor="@color/primaryColor"
+            style="@style/MyTextButton"
+            android:layout_height="wrap_content" android:id="@+id/CancelEvent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintHorizontal_bias="0.5" app:layout_constraintEnd_toStartOf="@+id/EventCancell"
-            android:layout_marginTop="32dp" app:layout_constraintTop_toBottomOf="@+id/textView4"
-            android:fontFamily="@font/roboto" android:textStyle="bold" android:textSize="14sp"/>
+            app:layout_constraintHorizontal_bias="0.5" app:layout_constraintEnd_toStartOf="@+id/RescheduleEvent"
+            android:layout_marginTop="32dp" app:layout_constraintTop_toBottomOf="@+id/textView4"/>
     <com.google.android.material.card.MaterialCardView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="16dp" android:layout_marginEnd="16dp"
             android:id="@+id/DidYouAttendCard"
-            android:layout_marginTop="32dp" app:layout_constraintTop_toBottomOf="@+id/SaveEvent">
+            android:layout_marginTop="32dp" app:layout_constraintTop_toBottomOf="@+id/CancelEvent">
         <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
             <TextView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" android:id="@+id/DidYouAttendhead" android:text="@string/didyouattend"
+                    android:layout_height="wrap_content" android:id="@+id/DidYouAttendhead"
+                    android:text="@string/didyouattend"
                     android:textSize="24sp" android:textAlignment="center" android:layout_margin="16dp"
                     android:fontFamily="@font/roboto" android:textColor="@color/black" android:textStyle="bold"/>
-            <TextView
+            <com.google.android.material.button.MaterialButton
                     android:text="@string/yes"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" android:id="@+id/EventAttendedPositive"
                     android:layout_marginStart="32dp" android:layout_marginTop="16dp"
-                    android:layout_marginBottom="8dp" android:background="@drawable/button_back"
-                    android:paddingStart="10dp" android:paddingEnd="10dp" android:paddingTop="6dp"
-                    android:paddingBottom="6dp" android:textColor="@color/white"
-                    android:drawableStart="@drawable/ic_check" android:drawablePadding="12dp"
-                    android:fontFamily="@font/roboto" android:textStyle="bold"/>
-            <TextView
+                    android:layout_marginBottom="8dp"
+                    app:icon="@drawable/ic_check"
+                    style="@style/MyFilledButton"/>
+            <com.google.android.material.button.MaterialButton
                     android:text="@string/no"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" android:id="@+id/EventAttendedNegative"
                     android:layout_marginStart="32dp" android:layout_marginTop="16dp"
-                    android:layout_marginBottom="8dp" android:background="@drawable/button_back"
-                    android:paddingStart="10dp" android:paddingEnd="10dp" android:paddingTop="6dp"
-                    android:paddingBottom="6dp" android:textColor="@color/white"
-                    android:drawableStart="@drawable/ic_close" android:drawablePadding="12dp"
-                    android:fontFamily="@font/roboto" android:textStyle="bold"/>
+                    android:layout_marginBottom="8dp"
+                    app:icon="@drawable/ic_close"
+                    style="@style/MyFilledButton"/>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
     <TextView

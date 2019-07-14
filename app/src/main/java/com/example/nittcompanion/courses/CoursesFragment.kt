@@ -7,12 +7,14 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.nittcompanion.R
 import com.example.nittcompanion.common.BaseViewModel
 import com.example.nittcompanion.common.factoryAndInjector.InjectorUtils
+import kotlinx.android.synthetic.main.fragment_calender.*
 import kotlinx.android.synthetic.main.fragment_courses.*
 
 class CoursesFragment : Fragment() {
@@ -30,6 +32,13 @@ class CoursesFragment : Fragment() {
         }
         setUpRecycler()
         setObservations()
+        setOnClicks( )
+    }
+
+    private fun setOnClicks() {
+        AddEventFAB.setOnClickListener {
+            findNavController().navigate(R.id.action_destination_courses_to_destination_add_courses)
+        }
     }
 
     private fun setUpRecycler() {
@@ -42,6 +51,7 @@ class CoursesFragment : Fragment() {
             this,
             Observer {
                 viewModel.listen(it)
+                findNavController().navigate(R.id.action_destination_courses_to_destination_course_detail)
             }
         )
     }
@@ -50,8 +60,8 @@ class CoursesFragment : Fragment() {
         activity?.let {activity ->
             viewModel.Courses.observe(
                 activity,
-                Observer {cources ->
-                    adapter.updateCources(cources)
+                Observer {courses ->
+                    adapter.updateCources(courses)
                 }
             )
         }

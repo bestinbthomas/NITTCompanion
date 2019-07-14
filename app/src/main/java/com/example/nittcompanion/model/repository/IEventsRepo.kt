@@ -1,9 +1,9 @@
 package com.example.nittcompanion.model.repository
 
-import androidx.lifecycle.LiveData
-import com.example.nittcompanion.common.*
+import com.example.nittcompanion.common.RECCUR_WEEK
+import com.example.nittcompanion.common.Result
+import com.example.nittcompanion.common.objects.Course
 import com.example.nittcompanion.common.objects.Event
-import java.lang.Exception
 import java.util.*
 
 interface IEventsRepo {
@@ -20,4 +20,6 @@ interface IEventsRepo {
     suspend fun createEvent(event: Event) : Result<Exception,Unit>
 
     suspend fun createReccuringEvent(event: Event,reccur:String= RECCUR_WEEK) : Result<Exception,Unit>
+
+    suspend fun getCources() : Result<Exception,List<Course>>
 }

@@ -11,17 +11,18 @@
                  android:layout_height="wrap_content"
                  android:src="@drawable/ic_profile_pic"
                  android:background="@android:color/transparent"
+                 android:contentDescription="@string/profile_pic"
     />
     <TextView android:layout_width="wrap_content"
               android:layout_height="wrap_content"
-              tools:text="Hi, Bestin B Thomas"
+              tools:text="Hi, Example Name"
               android:textStyle="bold"
               android:layout_marginTop="10dp"
               android:id="@+id/UserName" android:fontFamily="@font/roboto"
               android:textColor="@color/secondaryTextColor"/>
     <TextView android:layout_width="wrap_content"
               android:layout_height="wrap_content"
-              tools:text="bestinbthomas@gmail.om"
+              tools:text="example123@gmail.com"
               android:id="@+id/UserEmail" android:fontFamily="@font/roboto"
               android:textColor="@color/secondaryTextColor"/>
 

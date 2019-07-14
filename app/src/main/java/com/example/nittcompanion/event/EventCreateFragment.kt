@@ -1,4 +1,4 @@
-package com.example.nittcompanion.Event
+package com.example.nittcompanion.event
 
 import android.os.Bundle
 import android.view.LayoutInflater

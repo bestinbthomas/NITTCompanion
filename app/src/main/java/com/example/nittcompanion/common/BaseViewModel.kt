@@ -1,13 +1,11 @@
 package com.example.nittcompanion.common
 
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.nittcompanion.common.objects.Event
-import com.example.nittcompanion.common.*
 import com.example.nittcompanion.common.objects.Course
+import com.example.nittcompanion.common.objects.Event
 import com.example.nittcompanion.model.repository.IEventsRepo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -16,6 +14,7 @@ import java.util.*
 import kotlin.coroutines.CoroutineContext
 
 class BaseViewModel(protected val uicontext: CoroutineContext,private val eventRepo:IEventsRepo ) : ViewModel() ,CoroutineScope{
+
     private val TAG = "BaseViewModel"
     protected val jobTracker: Job
 
@@ -33,6 +32,9 @@ class BaseViewModel(protected val uicontext: CoroutineContext,private val eventR
 
     private val privateCourses  = MutableLiveData<List<Course>>()
     val Courses : LiveData<List<Course>> get() = privateCourses
+
+    private val SelCourse = MutableLiveData<Course>()
+    val DispCourse: LiveData<Course> get() = SelCourse
 
     init {
         jobTracker = Job()
