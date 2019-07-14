@@ -50,7 +50,7 @@ class CalenderFragment : Fragment() {
         selDate = Calendar.getInstance()
         GridAdapter = CalGridAdapter(requireContext(), selDate)
         CalGrid.adapter = GridAdapter
-        MonthNameTxt.text = "${MonthArray[selDate.get(Calendar.MONTH)]}  ${selDate.get(Calendar.YEAR)}"
+        MonthNameTxt.text = requireActivity().resources.getString(R.string.Month_Year,MonthArray[selDate.get(Calendar.MONTH)],selDate.get(Calendar.YEAR))
 
         setRecyclerView()
         setObservations()
@@ -72,7 +72,7 @@ class CalenderFragment : Fragment() {
                 androidx.lifecycle.Observer { cal ->
                     GridAdapter = CalGridAdapter(requireContext(), cal,monthEvents)
                     CalGrid.adapter = GridAdapter
-                    MonthNameTxt.text = "${MonthArray[cal.get(Calendar.MONTH)]}  ${cal.get(Calendar.YEAR)}"
+                    MonthNameTxt.text = requireActivity().resources.getString(R.string.Month_Year,MonthArray[cal.get(Calendar.MONTH)],cal.get(Calendar.YEAR))
                     selDate = cal
                     Log.d(TAG, "Month Changed to ${cal.get(Calendar.MONTH)}")
                 })
