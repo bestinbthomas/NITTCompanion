@@ -34,8 +34,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/textView2" app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent" android:layout_marginTop="129dp"
-            app:layout_constraintEnd_toEndOf="parent" style="@style/TextAppearance.MaterialComponents.Headline3"
+            app:layout_constraintEnd_toEndOf="parent"
             android:textStyle="bold" android:textColor="@color/primaryDarkColor" android:fontFamily="@font/slackey"
-            android:includeFontPadding="true"/>
+            android:includeFontPadding="false" android:textSize="36sp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,4 +1,4 @@
-package com.example.nittcompanion.calender
+package com.example.nittcompanion.event
 
 import android.view.LayoutInflater
 import android.view.View
@@ -12,10 +12,16 @@ import com.example.nittcompanion.common.getTimeInFormat
 import com.example.nittcompanion.common.objects.Event
 import kotlinx.android.synthetic.main.event_item.view.*
 
-class CalenderEventsRecyclerAdapter(private var events: List<Event>,val eventClickListener: MutableLiveData<ListenTo> = MutableLiveData()) : RecyclerView.Adapter<CalenderEventsRecyclerAdapter.MyHolder>() {
+class EventsRecyclerAdapter(private var events: List<Event>, val eventClickListener: MutableLiveData<ListenTo> = MutableLiveData()) : RecyclerView.Adapter<EventsRecyclerAdapter.MyHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyHolder {
         val inflator = LayoutInflater.from(parent.context)
-        return MyHolder(inflator.inflate(R.layout.event_item,parent,false))
+        return MyHolder(
+            inflator.inflate(
+                R.layout.event_item,
+                parent,
+                false
+            )
+        )
     }
 
     override fun getItemCount(): Int {

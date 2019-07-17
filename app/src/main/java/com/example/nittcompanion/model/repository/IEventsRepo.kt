@@ -22,4 +22,14 @@ interface IEventsRepo {
     suspend fun createReccuringEvent(event: Event,reccur:String= RECCUR_WEEK) : Result<Exception,Unit>
 
     suspend fun getCources() : Result<Exception,List<Course>>
+
+    suspend fun getCourcesWithID(courseid: String) : Result<Exception,Course>
+
+    suspend fun updateCourse(course: Course) : Result<Exception,Unit>
+
+    suspend fun updateEvent(event: Event) : Result<Exception,Unit>
+
+    suspend fun removeCourse(course: Course) : Result<Exception,Unit>
+
+    suspend fun removeEvent(event: Event) : Result<Exception,Unit>
 }

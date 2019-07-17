@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.nittcompanion.R
 import com.example.nittcompanion.common.BaseViewModel
+import com.example.nittcompanion.common.ListenTo
 import com.example.nittcompanion.common.factoryAndInjector.InjectorUtils
 import kotlinx.android.synthetic.main.fragment_calender.*
 import kotlinx.android.synthetic.main.fragment_courses.*
@@ -37,6 +38,7 @@ class CoursesFragment : Fragment() {
 
     private fun setOnClicks() {
         AddEventFAB.setOnClickListener {
+            viewModel.listen(ListenTo.AddNewCourse)
             findNavController().navigate(R.id.action_destination_courses_to_destination_add_courses)
         }
     }

@@ -7,6 +7,26 @@ import com.example.nittcompanion.model.repository.IEventsRepo
 import java.util.*
 
 class EventRepoImplementation: IEventsRepo {
+    override suspend fun getCourcesWithID(courseid: String): Result<Exception, Course> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override suspend fun updateCourse(course: Course): Result<Exception, Unit> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override suspend fun updateEvent(event: Event): Result<Exception, Unit> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override suspend fun removeCourse(course: Course): Result<Exception, Unit> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override suspend fun removeEvent(event: Event): Result<Exception, Unit> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     override suspend fun getCources(): Result<Exception, List<Course>> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }

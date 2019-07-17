@@ -17,7 +17,7 @@
         android:layout_height="wrap_content"
         app:rippleColor="@color/secondaryDarkColor"
         android:clickable="true"
-        app:srcCompat="@drawable/ic_fab_src"
+        app:srcCompat="@drawable/ic_plus"
         android:id="@+id/addCourseFAB"
         android:focusable="true"
         app:layout_anchorGravity="right|bottom"

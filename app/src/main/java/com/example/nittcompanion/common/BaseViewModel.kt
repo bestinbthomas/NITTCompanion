@@ -37,6 +37,8 @@ class BaseViewModel(protected val uicontext: CoroutineContext,private val eventR
     val DispCourse: LiveData<Course> get() = SelCourse
 
     init {
+        SelEvent.value = Event()
+        SelCourse.value = Course()
         jobTracker = Job()
         curDate.value = Calendar.getInstance()
     }
@@ -44,22 +46,71 @@ class BaseViewModel(protected val uicontext: CoroutineContext,private val eventR
     fun listen(listenTo : ListenTo){
         Log.d("TAG","Listen to called")
         when(listenTo){
+            is ListenTo.ActivityStarted -> initActivity()
             is ListenTo.NextMonthClicked -> changeMonth(1)
             is ListenTo.PreviourMonthClicked -> changeMonth(-1)
             is ListenTo.DateSelected -> changeDate(listenTo.date)
             is ListenTo.EventClicked -> selectEvent(listenTo.position)
             is ListenTo.ScheduleFragmentstart -> initScheduleFragment()
             is ListenTo.CoursesFragmentstart -> initCoursesFragment()
-            is ListenTo.CourseSelected -> selectCourse()
+            is ListenTo.CourseSelected -> selectCourse(listenTo.position)
+            is ListenTo.CancellEvent -> removeEvent()
+            is ListenTo.RecheduleTo -> rescheduleEvent(listenTo.startDate,listenTo.endDate)
+            is ListenTo.ClassAttended -> classAttended()
+            is ListenTo.ClassBunked -> classBunked()
         }
     }
 
-    private fun selectCourse() {
+    private fun initActivity() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
+    private fun classBunked() =launch{
+        val courseID = SelEvent.value!!.courceid
+        when(val result = eventRepo.getCourcesWithID(courseID)){
+            is Result.Value -> {result.value.classAttended()
+            eventRepo.updateCourse(result.value)}
+            is Result.Error -> errorState.value = ERROR_Course_UPDATE
+        }
+
+    }
+
+    private fun classAttended() =launch{
+        val courseID = SelEvent.value!!.courceid
+        when(val result = eventRepo.getCourcesWithID(courseID)){
+            is Result.Value -> {result.value.classBunked()
+                eventRepo.updateCourse(result.value)}
+            is Result.Error -> errorState.value = ERROR_Course_UPDATE
+        }
+    }
+
+    private fun rescheduleEvent(startDate: Calendar, endDate:  Calendar) =launch{
+        SelEvent.value!!.startDate = startDate
+        SelEvent.value!!.endDate = endDate
+        eventRepo.updateEvent(SelEvent.value!!)
+    }
+
+    private fun removeEvent() =launch{
+        when(eventRepo.removeEvent(SelEvent.value!!)){
+            is Result.Value -> SelEvent.value=null
+            is Result.Error -> errorState.value = ERROR_EVENT_REMOVE
+        }
+
+    }
+
+    private fun getCourses() = launch {
+        when(val result  = eventRepo.getCources()){
+            is Result.Value -> privateCourses.value = result.value
+            is Result.Error -> errorState.value = ERROR_Courses_LOAD
+        }
+    }
+
+    private fun selectCourse(position: Int) {
+        SelCourse.value = privateCourses.value?.get(position)
+    }
+
     private fun initCoursesFragment() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        getCourses()
     }
 
     private fun initScheduleFragment() {
@@ -99,20 +150,17 @@ class BaseViewModel(protected val uicontext: CoroutineContext,private val eventR
 
     private fun selectEvent (pos: Int) {
         SelEvent.value = SelectableEvents.value?.get(pos)
-    }
-
-    private fun getCt(courseid: String?) = launch{
-        when(val ctlist = eventRepo.getEventsByType(TYPE_CT,courseid)){
-            is Result.Value -> privateSelectableEvents.value = ctlist.value
-            is Result.Error -> errorState.value = ERROR_EVENT_LOAD
+        if (SelEvent.value!!.type == TYPE_CLASS || SelEvent.value!!.type == TYPE_LAB) launch {
+            when(val result = eventRepo.getCourcesWithID(DispEvent.value!!.courceid)){
+                is Result.Value -> SelCourse.value = result.value
+                is Result.Error -> errorState.value = ERROR_Courses_LOAD
+            }
         }
     }
 
+
     protected val errorState = MutableLiveData<String>()
     val error: LiveData<String> get() = errorState
-
-    protected val loadingState = MutableLiveData<Unit>()
-    val loading: LiveData<Unit> get() = loadingState
 
     override val coroutineContext: CoroutineContext
         get() = uicontext+jobTracker

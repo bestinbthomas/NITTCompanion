@@ -13,12 +13,10 @@
     <string name="events">Events</string>
     <string name="alarm">Alarm</string>
     <string name="to">To</string>
-    <string name="attended">Attended</string>
     <string name="didyouattend">Did You Attend ?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="cancel">Cancel Event</string>
-    <string name="Reschedule">Reschedule Event</string>
     <string name="Attendance">Attendance :</string>
     <string name="save">Save</string>
     <string name="type">Select Type :</string>
@@ -39,6 +37,23 @@
     <string name="classes">Classes</string>
     <string name="profile_pic">Profile Pic</string>
     <string name="Month_Year">%1$s %2$d</string>
+    <string name="credits_disp">%1$d Credits</string>
+    <string name="attended">You attended %1$d classes</string>
+    <string name="bunked">You Bunked %1$d calsses</string>
+    <string name="reschedule_to">Reschedule To</string>
+    <string name="upload_files">Upload Files</string>
+    <string name="uploading">Uploads</string>
+    <string name="hi_name">Hi, %1$s</string>
+    <string name="home">Home</string>
+    <string name="schedule">Schedule</string>
+    <string name="courses">Courses</string>
+    <string name="quick_links">Quick Links</string>
+    <string name="official_website">Official Website</string>
+    <string name="webmail">WebMail</string>
+    <string name="mis">MIS</string>
+    <string name="ruby">Ruby</string>
+    <string name="forms_portal">Forms Portal</string>
+    <string name="important">Important</string>
 
     <string-array name="Months">
         <item>January</item>
@@ -56,11 +71,11 @@
     </string-array>
     <string-array name="Event_types">
         <item>Class</item>
-        <item>CT</item>
-        <item>End Sem</item>
-        <item>Lab</item>
+        <item>ClassTest</item>
+        <item>EndSem</item>
         <item>Assignment</item>
-        <item>Other</item>
+        <item>LAB</item>
+        <item>OtherEvent</item>
     </string-array>
 
     <string-array name="slots">
@@ -75,4 +90,4 @@
         <item>4:20 – 5:10</item>
     </string-array>
 
-    </resources>
+</resources>

@@ -13,7 +13,7 @@ import com.example.nittcompanion.common.ListenTo
 import com.example.nittcompanion.common.objects.Course
 import kotlinx.android.synthetic.main.course_item.view.*
 
-class CourcesRecyclerAdapter(val context: Context, var courses : List<Course>, val eventSelectListen: MutableLiveData<ListenTo> = MutableLiveData()) : RecyclerView.Adapter<CourcesRecyclerAdapter.MyHolder>() {
+class CourcesRecyclerAdapter(private val context: Context, var courses : List<Course>, val eventSelectListen: MutableLiveData<ListenTo> = MutableLiveData()) : RecyclerView.Adapter<CourcesRecyclerAdapter.MyHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyHolder {
         val inflator = LayoutInflater.from(parent.context)
         return MyHolder(inflator.inflate(R.layout.course_item,parent,false))
@@ -24,7 +24,7 @@ class CourcesRecyclerAdapter(val context: Context, var courses : List<Course>, v
     override fun onBindViewHolder(holder: MyHolder, position: Int) {
         holder.name.text = courses[position].name
         holder.attendance.text = context.resources.getString(R.string.attendenceWithPercent,courses[position].attendance)
-        val classtoattend = courses[position].classToAttend
+        val classtoattend = courses[position].classToAttend.value!!
         holder.status.text = if(classtoattend<0) context.resources.getString(R.string.courseStatusBunk,(classtoattend*-1)) else context.resources.getString(R.string.courseStatusAttend,classtoattend)
         holder.root.setOnClickListener {
             eventSelectListen.value = ListenTo.CourseSelected(position)

@@ -17,13 +17,14 @@ import com.example.nittcompanion.common.ListenTo
 import com.example.nittcompanion.common.createSnackbar
 import com.example.nittcompanion.common.factoryAndInjector.InjectorUtils
 import com.example.nittcompanion.common.objects.Event
+import com.example.nittcompanion.event.EventsRecyclerAdapter
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_calender.*
 import java.util.*
 
 class CalenderFragment : Fragment() {
     private lateinit var viewModel: BaseViewModel
-    private lateinit var RecAdapter: CalenderEventsRecyclerAdapter
+    private lateinit var RecAdapter: EventsRecyclerAdapter
     private lateinit var GridAdapter: CalGridAdapter
     private lateinit var MonthArray: Array<String>
     private lateinit var selDate: Calendar
@@ -95,7 +96,7 @@ class CalenderFragment : Fragment() {
     }
 
     private fun setRecyclerView() {
-        RecAdapter = CalenderEventsRecyclerAdapter(listOf())
+        RecAdapter = EventsRecyclerAdapter(listOf())
         RecAdapter.eventClickListener.observe(
             this,
             androidx.lifecycle.Observer {
@@ -123,6 +124,7 @@ class CalenderFragment : Fragment() {
         }
 
         AddEventFAB.setOnClickListener {
+            viewModel.listen(ListenTo.AddNewEvent)
             findNavController().navigate(R.id.action_destination_calender_to_destination_event_create)
         }
     }

@@ -1,23 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<tools:menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"
+            tools:showIn="navigation_view" >
 
     <item
         android:id="@+id/destination_home"
-        android:title="Home"
+        android:title="@string/home"
         android:icon="@drawable/ic_home"
         />
 
     <item
             android:id="@+id/destination_calender"
-            android:title="Schedule"
+            android:title="@string/schedule"
             android:icon="@drawable/ic_calender"
     />
 
     <item
             android:id="@+id/destination_courses"
-            android:title="Courses"
+            android:title="@string/courses"
             android:icon="@drawable/ic_cources"
     />
 
+    <item android:title="@string/quick_links">
+        <menu>
+            <item android:id="@+id/website"
+                  android:title="@string/official_website"
+                  android:icon="@drawable/ic_web"/>
+            <item android:id="@+id/webmail"
+                  android:title="@string/webmail"
+                  android:icon="@drawable/ic_mail"/>
+            <item android:id="@+id/mis"
+                  android:title="@string/mis"
+                  android:icon="@drawable/ic_mis"/>
+            <item android:id="@+id/ruby"
+                  android:title="@string/ruby"
+                  android:icon="@drawable/ic_books"/>
+            <item android:id="@+id/forms"
+                  android:title="@string/forms_portal"
+                  android:icon="@drawable/ic_form"/>
+        </menu>
 
-</menu>
+    </item>
+
+
+</tools:menu>

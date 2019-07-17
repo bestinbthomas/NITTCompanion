@@ -4,7 +4,7 @@
                                                    xmlns:tools="http://schemas.android.com/tools"
                                                    android:layout_width="match_parent"
                                                    android:layout_height="match_parent"
-                                                   tools:context=".courses.CourseDetail"
+                                                   tools:context=".courses.CourseDetailFragment"
                                                    android:id="@+id/CourseDetailRoot">
 
     <TextView
@@ -12,10 +12,10 @@
             android:layout_height="wrap_content" android:id="@+id/CourseName"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent" android:layout_marginTop="32dp"
-            app:layout_constraintEnd_toEndOf="parent" android:textSize="24sp"
+            android:textSize="24sp"
             tools:text="Maths Class"
             android:fontFamily="@font/roboto" android:textColor="@color/black" android:textStyle="bold"
-            app:layout_constraintHorizontal_bias="0.2"/>
+            android:layout_marginStart="40dp"/>
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -28,7 +28,7 @@
             android:text="@string/Attendance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/textView4"
+            android:id="@+id/attendanceTxt"
             app:layout_constraintTop_toBottomOf="@+id/Credits" android:layout_marginTop="8dp"
             app:layout_constraintStart_toStartOf="@+id/Credits" android:fontFamily="@font/roboto"
             style="@style/MyTextAppearance.Body"/>
@@ -36,18 +36,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/EventAttendance" tools:text="75%"
-            app:layout_constraintBaseline_toBaselineOf="@+id/textView4"
-            app:layout_constraintStart_toEndOf="@+id/textView4" android:layout_marginStart="8dp"
+            app:layout_constraintBaseline_toBaselineOf="@+id/attendanceTxt"
+            app:layout_constraintStart_toEndOf="@+id/attendanceTxt" android:layout_marginStart="8dp"
             android:fontFamily="@font/roboto" android:textColor="@color/black" android:textSize="16sp"/>
     <com.google.android.material.card.MaterialCardView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:maxHeight="0dp"
             android:id="@+id/nextCTCard"
-            app:layout_constraintTop_toBottomOf="@+id/textView4"
-            app:layout_constraintBottom_toTopOf="@+id/nextClassCard" app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/AttendenceStatus"
+            app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="8dp" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
-            android:layout_marginTop="32dp" android:layout_marginBottom="8dp">
+            android:layout_marginTop="32dp" android:layout_marginBottom="32dp"
+            app:layout_constraintBottom_toTopOf="@+id/DeleteCourseBtn">
         <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -69,37 +70,6 @@
                     app:layout_constraintTop_toBottomOf="@+id/textView7" app:layout_constraintStart_toStartOf="parent"
                     android:layout_marginStart="8dp" app:layout_constraintEnd_toEndOf="parent"
                     android:layout_marginEnd="8dp" android:id="@+id/CourseAlertsRecView"/>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </com.google.android.material.card.MaterialCardView>
-    <com.google.android.material.card.MaterialCardView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:maxHeight="0dp"
-            android:id="@+id/nextClassCard"
-            app:layout_constraintTop_toBottomOf="@+id/nextCTCard" app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="8dp" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
-            android:layout_marginBottom="16dp" app:layout_constraintBottom_toTopOf="@+id/DeleteCourseBtn"
-            android:layout_marginTop="8dp">
-        <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-            <TextView
-                    android:text="@string/nextClass"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/textView8"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent"
-                    android:layout_marginTop="8dp" android:textStyle="bold"
-                    app:layout_constraintHorizontal_bias="0.14" android:textSize="18sp"
-                    android:textColor="@color/black"/>
-            <androidx.recyclerview.widget.RecyclerView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView8"
-                    android:layout_marginTop="8dp" app:layout_constraintStart_toStartOf="parent"
-                    android:layout_marginStart="8dp" app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_marginEnd="8dp"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
     <TextView
@@ -125,7 +95,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/MyTextButton"
-            android:drawableStart="@drawable/ic_fab_src"
+            android:drawableStart="@drawable/ic_plus"
             android:id="@+id/AddEventBtn" app:layout_constraintTop_toTopOf="parent"
             android:layout_marginTop="32dp" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="32dp"/>
 
@@ -138,6 +108,61 @@
             android:id="@+id/NotesBtn"
             android:layout_marginStart="32dp"
             app:layout_constraintBaseline_toBaselineOf="@+id/DeleteCourseBtn"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"/>
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/AttendenceStatus"
+            tools:text="You have to attent 3 more classes" style="@style/MyTextAppearance.Body"
+            app:layout_constraintStart_toStartOf="@+id/attendanceTxt"
+            app:layout_constraintTop_toBottomOf="@+id/attendanceTxt" android:layout_marginTop="8dp"/>
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/Attended"
+            app:layout_constraintStart_toStartOf="@+id/AttendenceStatus" android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@+id/AttendenceStatus" style="@style/MyTextAppearance.Body"
+            tools:text="You attended 5 classes"/>
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/Bunked"
+            app:layout_constraintStart_toStartOf="@+id/Attended" android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@+id/Attended" style="@style/MyTextAppearance.Body"
+            tools:text="You bunked 3 classes"/>
+    <ImageView
+            android:src="@drawable/ic_plus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/attendedPlus"
+            app:layout_constraintTop_toTopOf="@+id/Attended" app:layout_constraintBottom_toBottomOf="@+id/Attended"
+            app:layout_constraintStart_toEndOf="@+id/Attended" android:layout_marginStart="16dp"
+            android:tint="@color/colorPrimaryDark"/>
+    <ImageView
+            android:src="@drawable/ic_plus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/bunkedPlus"
+            app:layout_constraintTop_toTopOf="@+id/Bunked" app:layout_constraintBottom_toBottomOf="@+id/Bunked"
+            app:layout_constraintStart_toEndOf="@+id/Bunked" android:layout_marginStart="16dp"
+            android:tint="@color/colorPrimaryDark"/>
+    <ImageView
+            android:src="@drawable/ic_minus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/attendedMinus"
+            app:layout_constraintTop_toTopOf="@+id/attendedPlus"
+            app:layout_constraintBottom_toBottomOf="@+id/attendedPlus"
+            app:layout_constraintVertical_bias="0.0" app:layout_constraintEnd_toStartOf="@+id/Attended"
+            android:layout_marginEnd="16dp" android:tint="@color/colorPrimaryDark"/>
+    <ImageView
+            android:src="@drawable/ic_minus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/bunkedMinus"
+            app:layout_constraintEnd_toStartOf="@+id/Bunked"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/bunkedPlus"
+            app:layout_constraintTop_toTopOf="@+id/bunkedPlus" android:tint="@color/colorPrimaryDark"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

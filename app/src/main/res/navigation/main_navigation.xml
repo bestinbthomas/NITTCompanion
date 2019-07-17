@@ -11,7 +11,6 @@
                 app:destination="@id/destination_courses"/>
         <action android:id="@+id/action_destination_home_to_destination_calender"
                 app:destination="@id/destination_calender"/>
-        <action android:id="@+id/action_destination_home_to_destination_notes" app:destination="@id/destination_notes"/>
     </fragment>
     <fragment android:id="@+id/destination_courses" android:name="com.example.nittcompanion.courses.CoursesFragment"
               android:label="Courses" tools:layout="@layout/fragment_courses">
@@ -31,19 +30,33 @@
     </fragment>
     <fragment android:id="@+id/destination_alarm" android:name="com.example.nittcompanion.alarm.AlarmFragment"
               android:label="Alarms" tools:layout="@layout/fragment_alarm"/>
-    <fragment android:id="@+id/destination_notes" android:name="com.example.nittcompanion.notes.NotesFragment"
-              android:label="Notes" tools:layout="@layout/fragment_notes"/>
+    <activity android:id="@+id/destination_notes" android:name="com.example.nittcompanion.notes.NotesActivity"
+              android:label="Notes" tools:layout="@layout/activity_notes">
+        <argument android:name="courseID" app:argType="string"/>
+        <argument android:name="course name" app:argType="string"/>
+    </activity>
     <fragment android:id="@+id/destination_event_detail" tools:layout="@layout/fragment_event_detail"
               android:name="com.example.nittcompanion.event.EventDetailFragment"
-              android:label="EventDetailFragment"/>
+              android:label="EventDetailFragment">
+        <action android:id="@+id/action_destination_event_detail_to_destination_event_create"
+                app:destination="@id/destination_event_create"/>
+    </fragment>
     <fragment android:id="@+id/destination_event_create"
               tools:layout="@layout/fragment_event_create"
               android:name="com.example.nittcompanion.event.EventCreateFragment"
-              android:label="Create Event"/>
-    <fragment android:id="@+id/destination_course_detail" android:name="com.example.nittcompanion.courses.CourseDetail"
+              android:label="Create Event">
+        <argument android:name="CourseID" app:argType="string" app:nullable="true"/>
+    </fragment>
+    <fragment android:id="@+id/destination_course_detail" android:name="com.example.nittcompanion.courses.CourseDetailFragment"
               android:label="fragment_course_detail" tools:layout="@layout/fragment_course_detail">
         <action android:id="@+id/action_destination_course_detail_to_destination_notes"
                 app:destination="@id/destination_notes"/>
+        <action android:id="@+id/action_destination_course_detail_to_destination_event_create"
+                app:destination="@id/destination_event_create"/>
+        <action android:id="@+id/action_destination_course_detail_to_destination_event_detail"
+                app:destination="@id/destination_event_detail"/>
+        <action android:id="@+id/action_destination_course_detail_to_destination_add_courses"
+                app:destination="@id/destination_add_courses"/>
     </fragment>
     <fragment android:id="@+id/destination_add_courses" android:name="com.example.nittcompanion.courses.AddCourseFragment"
               android:label="AddCourseFragment" tools:layout="@layout/fragment_add_course"/>

@@ -38,14 +38,14 @@
         <item name="android:textStyle">bold</item>
         <item name="android:fontFamily">@font/roboto</item>
         <item name="rippleColor">@color/secondaryDarkColor</item>
-        <item name="iconTint">@color/primaryColor</item>
+        <item name="iconTint">@color/primaryDarkColor</item>
         <item name="iconGravity">start</item>
         <item name="android:paddingHorizontal">8dp</item>
         <item name="iconSize">20dp</item>
         <item name="iconPadding">8dp</item>
         <item name="android:padding">6dp</item>
         <item name="android:textSize">14sp</item>
-        <item name="android:textColor">@color/primaryColor</item>
+        <item name="android:textColor">@color/primaryDarkColor</item>
     </style>
 
     <style name="MyTextButton">
@@ -53,8 +53,8 @@
         <item name="android:paddingEnd">10dp</item>
         <item name="android:paddingTop">6dp</item>
         <item name="android:paddingBottom">6dp</item>
-        <item name="android:textColor">@color/primaryColor</item>
-        <item name="android:drawableTint">@color/colorPrimary</item>
+        <item name="android:textColor">@color/primaryDarkColor</item>
+        <item name="android:drawableTint">@color/colorPrimaryDark</item>
         <item name="android:drawablePadding">10dp</item>
         <item name="android:textAlignment">center</item>
         <item name="android:textSize">14sp</item>

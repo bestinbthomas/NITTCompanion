@@ -2,18 +2,17 @@ package com.example.nittcompanion.login
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.nittcompanion.R
-import com.example.nittcompanion.common.*
+import com.example.nittcompanion.common.MainActivity
+import com.example.nittcompanion.common.RC_SIGN_IN
+import com.example.nittcompanion.common.createSnackbar
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.common.internal.SignInButtonImpl
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
@@ -29,8 +28,8 @@ class LoginActivity : AppCompatActivity() {
     lateinit var googleSignInClient : GoogleSignInClient
     lateinit var auth :FirebaseAuth
 
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -44,20 +43,12 @@ class LoginActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
-        findViewById<SignInButtonImpl>(R.id.LoginBtn).setOnClickListener{
+        LoginBtn.setOnClickListener{
             signIn()
         }
 
         //move to MODEL
-        auth.addAuthStateListener {
-            if(it.currentUser != null){
-                Toast.makeText(this,"Already logged in", Toast.LENGTH_SHORT).show()
-                startActivity(Intent(this,MainActivity::class.java))
-            }
-            else{
-                Toast.makeText(this,"Not logged in", Toast.LENGTH_SHORT).show()
-            }
-        }
+
     }
 
     private fun signIn() {
@@ -92,6 +83,9 @@ class LoginActivity : AppCompatActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
+                    val intent = Intent(this,MainActivity::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK and Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    startActivity(intent)
                     Log.d(TAG, "signInWithCredential:success")
                 } else {
                     // If sign in fails, display a message to the user.
@@ -99,7 +93,6 @@ class LoginActivity : AppCompatActivity() {
                     createSnackbar("Authentication failed ",Snackbar.LENGTH_SHORT)
                 }
 
-                // ...
             }
     }
 
