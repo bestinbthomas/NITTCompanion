@@ -54,6 +54,11 @@
     <string name="ruby">Ruby</string>
     <string name="forms_portal">Forms Portal</string>
     <string name="important">Important</string>
+    <string name="is_this_a_lab">Is this a lab</string>
+    <string name="upcoming_events">Upcoming Events :</string>
+    <string name="more_events">More Events . . .</string>
+    <string name="see_courses">See Courses</string>
+    <string name="add_common_notes">Add Common Notes</string>
 
     <string-array name="Months">
         <item>January</item>

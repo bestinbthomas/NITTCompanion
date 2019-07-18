@@ -9,26 +9,29 @@ import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.recyclerview.widget.RecyclerView
 import com.example.nittcompanion.R
-import com.example.nittcompanion.common.copy
-import com.example.nittcompanion.common.getbeforeFirstDayOfMonth
+import com.example.nittcompanion.common.*
+import com.example.nittcompanion.common.objects.Alert
 import com.example.nittcompanion.common.objects.Event
 import java.util.*
-import kotlin.collections.ArrayList
 
 
-class CalGridAdapter(val context : Context,var date : Calendar,var events : List<Event> = listOf()) : BaseAdapter() {
+class CalGridAdapter(
+    val context: Context,
+    var date: Calendar,
+    var events: List<Event> = listOf(),
+    var alerts: List<Alert> = listOf()
+) : BaseAdapter() {
 
-    var tempdate = date.copy()
-    val NoOfDays = date.getActualMaximum(Calendar.DAY_OF_MONTH)
-    val bufferDate = tempdate.getbeforeFirstDayOfMonth()
+    private var tempdate = date.copy()
+    private val noOfDays = date.getActualMaximum(Calendar.DAY_OF_MONTH)
+    private val bufferDate = tempdate.getbeforeFirstDayOfMonth()
 
     init {
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        val view : View = LayoutInflater.from(context).inflate(R.layout.calender_item,parent,false)
+        val view : View = convertView?:LayoutInflater.from(context).inflate(R.layout.calender_item,parent,false)
         val calitemroot = view.findViewById<ConstraintLayout>(R.id.calItemConstraint)
         val calback = view.findViewById<ImageView>(R.id.currBack)
         val dispdate = view.findViewById<TextView>(R.id.calDate)
@@ -41,18 +44,29 @@ class CalGridAdapter(val context : Context,var date : Calendar,var events : List
         }
         else{
             val disp = position-bufferDate+1
+            calback.visibility = View.INVISIBLE
+            cautiondot.visibility = View.INVISIBLE
+            cautionbar2.visibility = View.INVISIBLE
+            cautionbar1.visibility = View.INVISIBLE
+            dispdate.text = disp.toString()
+            dispdate.setTextColor(Color.WHITE)
             if (disp==date.get(Calendar.DAY_OF_MONTH)){
                 dispdate.setTextColor(Color.BLACK)
-                dispdate.text = disp.toString()
                 calback.visibility = View.VISIBLE
-                cautionbar1.visibility=View.VISIBLE
             }
-            else{
-                dispdate.setTextColor(Color.WHITE)
-                dispdate.text = disp.toString()
-                calback.visibility = View.INVISIBLE
-                cautiondot.visibility = View.VISIBLE
-                cautionbar2.visibility = View.VISIBLE
+            events.forEach {
+                if (it.startDate[Calendar.DAY_OF_MONTH] == disp) {
+                    if (it.type in arrayOf(TYPE_ASSIGNMENT, TYPE_ENDSEM, TYPE_CT))
+                        cautionbar1.visibility = View.VISIBLE
+                    else if (it.type == TYPE_OTHER)
+                        cautionbar2.visibility = View.VISIBLE
+                }
+            }
+
+            alerts.forEach {
+                date = Calendar.getInstance().getCalEnderWithMillis(it.timeinmillis)
+                if (date[Calendar.DATE] == disp && disp <= Calendar.getInstance()[Calendar.DATE])
+                    cautiondot.visibility = View.VISIBLE
             }
         }
 
@@ -69,7 +83,19 @@ class CalGridAdapter(val context : Context,var date : Calendar,var events : List
     }
 
     override fun getCount(): Int {
-        return NoOfDays+bufferDate
+        return noOfDays+bufferDate
+    }
+
+    fun updateDate(date : Calendar){
+        this.date = date
+    }
+
+    fun updateEvents(events: List<Event>){
+        this.events = events
+    }
+
+    fun updateAlerts(alerts: List<Alert>){
+        this.alerts = alerts
     }
 
 

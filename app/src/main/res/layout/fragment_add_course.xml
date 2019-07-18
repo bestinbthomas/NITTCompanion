@@ -40,6 +40,17 @@
                                                                          android:inputType="number"
                                                                          android:layout_height="wrap_content"/>
             </com.google.android.material.textfield.TextInputLayout>
+            <Switch android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:id="@+id/IsLab"
+                    android:text="@string/is_this_a_lab"
+                    android:layout_below="@id/CourseCreditsInputLayout"
+                    android:clickable="true"
+                    android:checked="false"
+                    android:switchPadding="10dp"
+                    android:textAppearance="@style/MyTextAppearance.Body"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginStart="8dp"/>
         </RelativeLayout>
     </com.google.android.material.card.MaterialCardView>
 

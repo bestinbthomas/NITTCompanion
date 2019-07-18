@@ -7,7 +7,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
@@ -19,7 +21,7 @@ import com.example.nittcompanion.R
 import com.example.nittcompanion.common.factoryAndInjector.InjectorUtils
 import com.example.nittcompanion.login.LoginActivity
 import com.google.android.material.navigation.NavigationView
-import com.google.firebase.auth.FirebaseAuth
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.nav_head.view.*
 
@@ -29,8 +31,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var navigationController :NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var viewModel :BaseViewModel
-    private val user = FirebaseAuth.getInstance().currentUser
-
     override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -52,16 +52,45 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onStart() {
         super.onStart()
-        val name = user?.displayName
+        val user = when(val result=getCurrentUser()){
+            is Result.Value -> result.value
+            is Result.Error -> {
+                this.createSnackbar("Error verifying user",Snackbar.LENGTH_LONG)
+                null
+            }
+        }
+        val name = user?.name
         val email = user?.email
-        viewModel.listen(ListenTo.ActivityStarted)
         val headderView = NavigationMain.getHeaderView(0)
         Glide.with(this)
-            .load(user?.photoUrl)
+            .load(user?.dispPicUrl)
             .apply(RequestOptions.circleCropTransform())
             .into(headderView.ProfilePic)
         headderView.UserName.text = resources.getString(R.string.hi_name,name?:"NITTian")
         headderView.UserEmail.text = email?:""
+        headderView.LogOutBtn.setOnClickListener {
+            AlertDialog.Builder(this)
+                .setTitle("Confirm Logout")
+                .setMessage("Do you really want to logout")
+                .setPositiveButton("Cancel"){_,_ ->
+
+                }
+                .setNegativeButton("Yes"){_,_ ->
+                    logout()
+                }
+                .create()
+                .show()
+        }
+        setObservations()
+    }
+
+    private fun setObservations() {
+        viewModel.error.observe(
+            this,
+            Observer {
+                createSnackbar(it,Snackbar.LENGTH_LONG)
+            }
+        )
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -96,7 +125,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun logout(){
-        FirebaseAuth.getInstance().signOut()
+        logOutUser()
         val intent = Intent(this,LoginActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK and Intent.FLAG_ACTIVITY_CLEAR_TASK)
         startActivity(intent)

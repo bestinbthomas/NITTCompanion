@@ -2,6 +2,8 @@
 <resources>
     <array name="preloaded_fonts" translatable="false">
         <item>@font/baloo_da</item>
+        <item>@font/knewave</item>
+        <item>@font/pacifico</item>
         <item>@font/roboto</item>
         <item>@font/slackey</item>
     </array>

@@ -15,6 +15,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.nittcompanion.R
 import com.example.nittcompanion.common.*
 import com.example.nittcompanion.common.factoryAndInjector.InjectorUtils
+import com.example.nittcompanion.common.objects.Alert
 import com.example.nittcompanion.common.objects.Course
 import com.example.nittcompanion.common.objects.Event
 import com.google.android.material.snackbar.Snackbar
@@ -23,12 +24,12 @@ import java.util.*
 
 class EventCreateFragment : Fragment() {
     private lateinit var viewModel: BaseViewModel
-    private lateinit var courses : List<Course>
+    private lateinit var courses: List<Course>
     private lateinit var event: Event
     private val startDate = Calendar.getInstance()
     private val endDate = Calendar.getInstance()
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_event_create,container,false)
+        return inflater.inflate(R.layout.fragment_event_create, container, false)
     }
 
     override fun onStart() {
@@ -36,7 +37,8 @@ class EventCreateFragment : Fragment() {
         activity?.let {
             viewModel = ViewModelProviders.of(
                 requireActivity(),
-                InjectorUtils(requireActivity().application).provideBaseViewModelFactory()).get(BaseViewModel::class.java)
+                InjectorUtils(requireActivity().application).provideBaseViewModelFactory()
+            ).get(BaseViewModel::class.java)
         }
 
         event = viewModel.DispEvent.value!!
@@ -76,11 +78,13 @@ class EventCreateFragment : Fragment() {
                 startDate[Calendar.SECOND] = 5
                 EventStartTime.text = startDate.getTimeInFormat()
             }
-            TimePickerDialog(requireContext(),
+            TimePickerDialog(
+                requireContext(),
                 startTimePickerListener,
                 startDate[Calendar.HOUR_OF_DAY],
                 startDate[Calendar.MINUTE],
-                true)
+                true
+            )
         }
         EventEndTime.setOnClickListener {
             val endTimePickerListener = TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
@@ -89,11 +93,13 @@ class EventCreateFragment : Fragment() {
                 endDate[Calendar.SECOND] = 5
                 EventEndTime.text = endDate.getTimeInFormat()
             }
-            TimePickerDialog(requireContext(),
+            TimePickerDialog(
+                requireContext(),
                 endTimePickerListener,
                 endDate[Calendar.HOUR_OF_DAY],
                 endDate[Calendar.MINUTE],
-                true)
+                true
+            )
         }
     }
 
@@ -106,7 +112,10 @@ class EventCreateFragment : Fragment() {
     }
 
     private fun saveEvent() {
-        if (!validateName() ) return
+        if (!validateName()) return
+
+        if (ImpSwitch.isChecked)
+            viewModel.listen(ListenTo.AddAlert(Alert(startDate.timeInMillis, event.ID)))
         viewModel.listen(
             ListenTo.UpdateEvent(
                 Event(
@@ -121,7 +130,7 @@ class EventCreateFragment : Fragment() {
         )
         createSnackbar("Event Created", Snackbar.LENGTH_SHORT)
         findNavController().popBackStack()
-        TODO("call broadcast for important")
+
     }
 
 
@@ -130,15 +139,34 @@ class EventCreateFragment : Fragment() {
         courses.forEach {
             coursenames.add(it.name)
         }
-        EventDetailName.editText!!.setText(event.name,TextView.BufferType.EDITABLE)
-        CourseSpinner.adapter = ArrayAdapter(requireContext(),android.R.layout.simple_spinner_dropdown_item,coursenames)
+        EventDetailName.editText!!.setText(event.name, TextView.BufferType.EDITABLE)
+        CourseSpinner.adapter =
+            ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, coursenames)
+        if(event.courceid.isNotEmpty()) {
+            CourseSpinner.setSelection(courses.indexOf(courses.filter {
+                it.ID == event.courceid
+            }[0]))
+        }
+        if(event.type.isNotEmpty()) {
+            typeSpinner.setSelection(
+                when (event.type) {
+                    TYPE_CLASS -> 0
+                    TYPE_CT -> 1
+                    TYPE_ENDSEM -> 2
+                    TYPE_ASSIGNMENT -> 3
+                    TYPE_LAB -> 4
+                    TYPE_OTHER -> 5
+                    else -> -1
+                }
+            )
+        }
         Date.text = startDate.getDateInFormat()
         EventStartTime.text = startDate.getTimeInFormat()
         EventEndTime.text = endDate.getTimeInFormat()
     }
 
     private fun setObservations() {
-        activity?.let{act ->
+        activity?.let { act ->
             viewModel.Courses.observe(
                 act,
                 Observer { crs ->

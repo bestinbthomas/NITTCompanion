@@ -14,7 +14,6 @@ import com.example.nittcompanion.common.factoryAndInjector.InjectorUtils
 import com.example.nittcompanion.common.objects.Alert
 import com.example.nittcompanion.common.objects.Course
 import com.example.nittcompanion.common.objects.Event
-import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_event_detail.*
 
 class EventDetailFragment : Fragment() {
@@ -30,15 +29,6 @@ class EventDetailFragment : Fragment() {
         super.onStart()
         activity?.let{viewModel = ViewModelProviders.of(requireActivity(), InjectorUtils(requireActivity().application).provideBaseViewModelFactory()).get(BaseViewModel::class.java)}
 
-        val pref = requireActivity().getSharedPreferences(SHARED_PREF_NAME, MODE_PRIVATE)
-
-        val alertString  = pref.getString(SHARED_PREF_KEY_ALERTS,null)
-
-        alertString?.let {
-            val gson  = Gson()
-            alerts = gson.fromJson(it, listOf<Alert>().javaClass)
-        }
-
         course = viewModel.DispCourse.value!!
         event = viewModel.DispEvent.value!!
         setObservations()
@@ -48,8 +38,10 @@ class EventDetailFragment : Fragment() {
 
     private fun setViews() {
 
+        alerts = viewModel.alerts.value?: listOf()
+
         val alert = !alerts.none {
-            event.ID.toLong()/1000 in (it.eventId.toLong()/1000)-2..((it.eventId.toLong()/1000)+2)
+            event.ID == it.eventId
         }
 
         EventDetailName.text = event.name
@@ -84,6 +76,12 @@ class EventDetailFragment : Fragment() {
                     setViews()
                 }
             )
+            viewModel.alerts.observe(
+                act,
+                Observer {
+                    alerts = it
+                }
+            )
         }
     }
 
@@ -97,7 +95,6 @@ class EventDetailFragment : Fragment() {
             findNavController().navigate(direction)
         }
         EventAttendedPositive.setOnClickListener {
-
             viewModel.listen(ListenTo.ClassAttended)
         }
         EventAttendedPositive.setOnClickListener {
@@ -105,16 +102,4 @@ class EventDetailFragment : Fragment() {
         }
     }
 
-    private fun updateAlerts(){
-        alerts = alerts.filter {
-            event.ID.toLong()/1000 in (it.eventId.toLong()/1000)-2..((it.eventId.toLong()/1000)+2)
-        }
-        val gson = Gson()
-        val alertString = gson.toJson(alerts, listOf<Alert>().javaClass)
-        val pref = requireActivity().getSharedPreferences(SHARED_PREF_NAME, MODE_PRIVATE)
-        val editor = pref.edit()
-        editor.putString(SHARED_PREF_KEY_ALERTS,alertString)
-        editor.apply()
-
-    }
 }

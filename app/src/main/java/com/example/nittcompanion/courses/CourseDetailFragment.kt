@@ -42,6 +42,7 @@ class CourseDetailFragment : Fragment() {
             BaseViewModel::class.java)}
 
         course = viewModel.DispCourse.value!!
+        viewModel.listen(ListenTo.CourseDetailStart)
         setUpRecycler()
         setObservations()
         setViews()

@@ -27,18 +27,16 @@ internal suspend fun <T> awaitTaskResult(task: Task<T>): T = suspendCoroutine { 
     }
 }
 
-internal fun logOutUser() {
-    FirebaseAuth.getInstance().signOut()
-}
+internal fun logOutUser() = FirebaseAuth.getInstance().signOut()
 
-fun getCurrentUser(): Result<Exception, User?> {
-    val fireUser = FirebaseAuth.getInstance().currentUser
-    return if (fireUser == null)
-        Result.build { null }
-    else Result.build {
+fun getCurrentUser() = when (val fireUser = FirebaseAuth.getInstance().currentUser) {
+    null -> Result.build { null }
+    else -> Result.build {
         User(
             fireUser.uid,
-            fireUser.displayName ?: ""
+            fireUser.displayName ?: "",
+            fireUser.email?:"",
+            fireUser.photoUrl
         )
     }
 }

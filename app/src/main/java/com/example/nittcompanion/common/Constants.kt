@@ -12,12 +12,10 @@ const val TYPE_ASSIGNMENT = "Assignment"
 const val TYPE_LAB = "LAB"
 const val TYPE_OTHER = "OtherEvent"
 
-const val RECCUR_WEEK = "RepeatWeekly"
-
 const val ERROR_EVENT_LOAD = "Error Loading Events"
 const val ERROR_EVENT_REMOVE = "Error cancelling Event"
-const val ERROR_Courses_LOAD = "Error Loading Courses"
-const val ERROR_Course_UPDATE = "Error Updating Course"
+const val ERROR_EVENT_SYNC = "Error syncing Event"
+const val ERROR_REMOVING_COURSE = "Error removing Course"
 
 const val FIREBASE_COLLECTION_NOTES = "Notes"
 const val FIREBASE_COLLECTION_COURSES = "Courses"
@@ -29,6 +27,5 @@ const val NOTE_UNLOADING = 0
 
 const val FILE_DIR_EXTENTION = "/NITTCompanion"
 
-const val SHARED_PREF_NAME = "saved"
-const val SHARED_PREF_KEY_ALERTS = "alerts"
-const val MODE_PRIVATE = 0
+const val HOME_COURSE_ID = "homeNotes"
+const val HOME_COURSE_NAME = "Common Files"

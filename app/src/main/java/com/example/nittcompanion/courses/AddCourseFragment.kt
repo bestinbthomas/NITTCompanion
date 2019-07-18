@@ -23,6 +23,7 @@ import java.util.*
 class AddCourseFragment : Fragment() {
     private lateinit var viewModel: BaseViewModel
     private lateinit var course: Course
+    private var isLab = false
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_add_course, container, false)
     }
@@ -42,8 +43,16 @@ class AddCourseFragment : Fragment() {
 
         setObservations()
         setViews()
+        setOnClicks()
+    }
+
+    private fun setOnClicks() {
         saveCourse.setOnClickListener{
             saveCourse()
+        }
+        IsLab.setOnCheckedChangeListener { _, isChecked ->
+            isLab = isChecked
+            setViews()
         }
     }
 
@@ -74,7 +83,8 @@ class AddCourseFragment : Fragment() {
                 Calendar.WEDNESDAY to WedSlotPicker.value,
                 Calendar.THURSDAY to ThuSlotPicker.value,
                 Calendar.FRIDAY to FriSlotPicker.value
-            ))
+            ), isLab
+        )
         viewModel.listen(
             ListenTo.UpdateCourse(
                 Course(
@@ -89,7 +99,10 @@ class AddCourseFragment : Fragment() {
     }
 
     private fun setViews() {
-        val slots = requireActivity().resources.getStringArray(R.array.slots)
+        val slots = if (!isLab)
+            requireActivity().resources.getStringArray(R.array.slots)
+        else
+            arrayOf("None","Morning","Evening")
         MonSlotPicker.minValue = 0
         MonSlotPicker.maxValue = slots.size - 1
         MonSlotPicker.wrapSelectorWheel = false

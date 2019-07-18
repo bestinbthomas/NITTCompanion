@@ -3,20 +3,26 @@ package com.example.nittcompanion.common
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
+import com.example.nittcompanion.common.objects.Alert
 import com.example.nittcompanion.common.objects.Course
 import com.example.nittcompanion.common.objects.Event
-import com.example.nittcompanion.model.repository.IEventsRepo
+import com.example.nittcompanion.model.repository.IRepo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.coroutines.CoroutineContext
 
-class BaseViewModel(protected val uicontext: CoroutineContext,private val eventRepo:IEventsRepo ) : ViewModel() ,CoroutineScope{
+class BaseViewModel(protected val uicontext: CoroutineContext,private val repo:IRepo ) : ViewModel() ,CoroutineScope{
+
+    val alerts: LiveData<List<Alert>> = Transformations.map(repo.getAlerts()){
+        it
+    }
 
     private val TAG = "BaseViewModel"
-    protected val jobTracker: Job
+    private val jobTracker: Job
 
     private val curDate = MutableLiveData<Calendar>()
     val DispDate : LiveData<Calendar> get() = curDate
@@ -30,8 +36,9 @@ class BaseViewModel(protected val uicontext: CoroutineContext,private val eventR
     private val SelEvent = MutableLiveData<Event>()
     val DispEvent : LiveData<Event> get() = SelEvent
 
-    private val privateCourses  = MutableLiveData<List<Course>>()
-    val Courses : LiveData<List<Course>> get() = privateCourses
+    val Courses : LiveData<List<Course>> = Transformations.map(repo.getCources()){
+        it
+    }
 
     private val SelCourse = MutableLiveData<Course>()
     val DispCourse: LiveData<Course> get() = SelCourse
@@ -46,71 +53,109 @@ class BaseViewModel(protected val uicontext: CoroutineContext,private val eventR
     fun listen(listenTo : ListenTo){
         Log.d("TAG","Listen to called")
         when(listenTo){
-            is ListenTo.ActivityStarted -> initActivity()
             is ListenTo.NextMonthClicked -> changeMonth(1)
-            is ListenTo.PreviourMonthClicked -> changeMonth(-1)
+            is ListenTo.PreviousMonthClicked -> changeMonth(-1)
             is ListenTo.DateSelected -> changeDate(listenTo.date)
             is ListenTo.EventClicked -> selectEvent(listenTo.position)
             is ListenTo.ScheduleFragmentstart -> initScheduleFragment()
-            is ListenTo.CoursesFragmentstart -> initCoursesFragment()
             is ListenTo.CourseSelected -> selectCourse(listenTo.position)
             is ListenTo.CancellEvent -> removeEvent()
-            is ListenTo.RecheduleTo -> rescheduleEvent(listenTo.startDate,listenTo.endDate)
             is ListenTo.ClassAttended -> classAttended()
             is ListenTo.ClassBunked -> classBunked()
+            is ListenTo.AddEventForCourse -> addEventForCourse()
+            is ListenTo.RemoveCourse -> removeCourse()
+            is ListenTo.AddNewEvent -> addNewEvent()
+            is ListenTo.AddNewCourse -> addNewCourse()
+            is ListenTo.AddAlert -> addAlert(listenTo.alert)
+            is ListenTo.UpdateCourse -> updateCourse(listenTo.course)
+            is ListenTo.UpdateEvent -> updateEvent(listenTo.event)
+            is ListenTo.CourseDetailStart -> initCourseDetail()
+            is ListenTo.HomeFragmentStart -> initHomeFragment()
         }
     }
 
-    private fun initActivity() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    private fun initHomeFragment() = launch{
+        when(val res = repo.getUpcommingEvents(7)){
+            is Result.Value -> privateSelectableEvents.value = res.value
+            is Result.Error -> errorState.value = ERROR_EVENT_LOAD
+        }
+    }
+
+    private fun initCourseDetail() =launch{
+         when(val res = repo.getEventsByType(DispCourse.value!!.ID, TYPE_ASSIGNMENT, TYPE_CT, TYPE_ENDSEM)){
+            is Result.Value -> privateSelectableEvents.value = res.value
+            is Result.Error -> errorState.value = ERROR_EVENT_LOAD
+        }
+    }
+
+    private fun updateEvent(event: Event) {
+        if (privateSelectableEvents.value!!.none {
+                it.ID == event.ID
+            }) {
+            val events = privateSelectableEvents.value as MutableList
+            events.add(event)
+            privateSelectableEvents.value = events
+            }
+        launch { evaluateResult("update event",repo.updateEvent(event)) }
+    }
+
+    private fun updateCourse(course: Course) {
+        launch {  evaluateResult("update courses",repo.updateCourse(course))}
+    }
+
+    private fun addAlert(alert: Alert) {
+       launch { evaluateResult("update courses",repo.addAlert(alert)) }
+
+    }
+
+    private fun addNewCourse() {
+        SelCourse.value = Course()
+    }
+
+    private fun addNewEvent() {
+        SelEvent.value = Event()
+    }
+
+    private fun removeCourse() = launch{
+        when(repo.removeCourse(DispCourse.value!!)){
+            is Result.Value -> SelCourse.value = Course()
+            is Result.Error -> errorState.value = ERROR_REMOVING_COURSE
+        }
+    }
+
+    private fun addEventForCourse() {
+        SelEvent.value = Event(name = SelCourse.value!!.name,type = TYPE_CLASS)
     }
 
     private fun classBunked() =launch{
         val courseID = SelEvent.value!!.courceid
-        when(val result = eventRepo.getCourcesWithID(courseID)){
-            is Result.Value -> {result.value.classAttended()
-            eventRepo.updateCourse(result.value)}
-            is Result.Error -> errorState.value = ERROR_Course_UPDATE
-        }
+        val course = Courses.value!!.find { it.ID == courseID }
+        course!!.classBunked()
+        evaluateResult("update courses",repo.updateCourse(course))
+        val alert = alerts.value!!.find { it.eventId == DispEvent.value!!.ID }
+        evaluateResult("remove alert",repo.removeAlert(alert!!))
 
     }
 
     private fun classAttended() =launch{
         val courseID = SelEvent.value!!.courceid
-        when(val result = eventRepo.getCourcesWithID(courseID)){
-            is Result.Value -> {result.value.classBunked()
-                eventRepo.updateCourse(result.value)}
-            is Result.Error -> errorState.value = ERROR_Course_UPDATE
-        }
-    }
-
-    private fun rescheduleEvent(startDate: Calendar, endDate:  Calendar) =launch{
-        SelEvent.value!!.startDate = startDate
-        SelEvent.value!!.endDate = endDate
-        eventRepo.updateEvent(SelEvent.value!!)
+        val course = Courses.value!!.find { it.ID == courseID }
+        course!!.classAttended()
+        evaluateResult("update courses",repo.updateCourse(course))
+        val alert = alerts.value!!.find { it.eventId == DispEvent.value!!.ID }
+        evaluateResult("remove alert",repo.removeAlert(alert!!))
     }
 
     private fun removeEvent() =launch{
-        when(eventRepo.removeEvent(SelEvent.value!!)){
+        when(repo.removeEvent(SelEvent.value!!)){
             is Result.Value -> SelEvent.value=null
             is Result.Error -> errorState.value = ERROR_EVENT_REMOVE
         }
 
     }
 
-    private fun getCourses() = launch {
-        when(val result  = eventRepo.getCources()){
-            is Result.Value -> privateCourses.value = result.value
-            is Result.Error -> errorState.value = ERROR_Courses_LOAD
-        }
-    }
-
     private fun selectCourse(position: Int) {
-        SelCourse.value = privateCourses.value?.get(position)
-    }
-
-    private fun initCoursesFragment() {
-        getCourses()
+        SelCourse.value = Courses.value!![position]
     }
 
     private fun initScheduleFragment() {
@@ -119,14 +164,14 @@ class BaseViewModel(protected val uicontext: CoroutineContext,private val eventR
     }
 
     private fun getEventsInMonth() = launch {
-        when(val repoResult = eventRepo.getEventsInMonth_Date(value = curDate.value!!.getMonthInFormat())){
+        when(val repoResult = repo.getEventsIn(date = curDate.value!!)){
             is Result.Value -> privateMonthlyEvents.value = repoResult.value
             is Result.Error -> errorState.value = ERROR_EVENT_LOAD
         }
     }
     private fun getEventsOnDate() = launch {
-        when(val repoResult = eventRepo.getEventsInMonth_Date(value = curDate.value!!.getDateInFormat())){
-            is Result.Value -> privateMonthlyEvents.value = repoResult.value
+        when(val repoResult = repo.getEventsIn(date = curDate.value!!)){
+            is Result.Value -> privateSelectableEvents.value = repoResult.value
             is Result.Error -> errorState.value = ERROR_EVENT_LOAD
         }
     }
@@ -149,19 +194,24 @@ class BaseViewModel(protected val uicontext: CoroutineContext,private val eventR
     }
 
     private fun selectEvent (pos: Int) {
-        SelEvent.value = SelectableEvents.value?.get(pos)
-        if (SelEvent.value!!.type == TYPE_CLASS || SelEvent.value!!.type == TYPE_LAB) launch {
-            when(val result = eventRepo.getCourcesWithID(DispEvent.value!!.courceid)){
-                is Result.Value -> SelCourse.value = result.value
-                is Result.Error -> errorState.value = ERROR_Courses_LOAD
-            }
+        SelEvent.value = SelectableEvents.value!![pos]
+        if (SelEvent.value!!.type in arrayOf(TYPE_CLASS, TYPE_LAB)) {
+            SelCourse.value = Courses.value!!.find { it.ID == DispEvent.value!!.courceid }
         }
     }
 
 
-    protected val errorState = MutableLiveData<String>()
+    private val errorState = MutableLiveData<String>()
     val error: LiveData<String> get() = errorState
 
     override val coroutineContext: CoroutineContext
         get() = uicontext+jobTracker
+
+    private fun evaluateResult (name : String, result: Result<Exception,Unit>){
+        when(result){
+            is Result.Value -> Log.d(TAG,"$name successfully executed")
+            is Result.Error -> Log.e(TAG,"$name failed",result.error)
+        }
+    }
 }
+

@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -46,13 +47,8 @@ class CalenderFragment : Fragment() {
 
         viewModel.listen(ListenTo.ScheduleFragmentstart)
 
-        MonthArray = resources.getStringArray(R.array.Months)
 
-        selDate = Calendar.getInstance()
-        GridAdapter = CalGridAdapter(requireContext(), selDate)
-        CalGrid.adapter = GridAdapter
-        MonthNameTxt.text = requireActivity().resources.getString(R.string.Month_Year,MonthArray[selDate.get(Calendar.MONTH)],selDate.get(Calendar.YEAR))
-
+        setUpCalender()
         setRecyclerView()
         setObservations()
         setClickListeners()
@@ -60,18 +56,28 @@ class CalenderFragment : Fragment() {
 
     }
 
+    private fun setUpCalender() {
+        val events = viewModel.MonthlyEvents.value
+        val alerts = viewModel.alerts.value
+        MonthArray = resources.getStringArray(R.array.Months)
+        selDate = Calendar.getInstance()
+        GridAdapter = CalGridAdapter(context = requireContext(),date =  selDate,events = events?: listOf(),alerts = alerts?: listOf())
+        CalGrid.adapter = GridAdapter
+        MonthNameTxt.text = requireActivity().resources.getString(R.string.Month_Year,MonthArray[selDate.get(Calendar.MONTH)],selDate.get(Calendar.YEAR))
+    }
+
     private fun setObservations() {
 
         activity?.let {
             viewModel.error.observe(
                 it,
-                androidx.lifecycle.Observer { msg ->
+                Observer { msg ->
                     createSnackbar(msg, Snackbar.LENGTH_SHORT)
                 }
             )
             viewModel.DispDate.observe(it,
-                androidx.lifecycle.Observer { cal ->
-                    GridAdapter = CalGridAdapter(requireContext(), cal,monthEvents)
+                Observer { cal ->
+                    GridAdapter.updateDate(cal)
                     CalGrid.adapter = GridAdapter
                     MonthNameTxt.text = requireActivity().resources.getString(R.string.Month_Year,MonthArray[cal.get(Calendar.MONTH)],cal.get(Calendar.YEAR))
                     selDate = cal
@@ -79,16 +85,23 @@ class CalenderFragment : Fragment() {
                 })
             viewModel.MonthlyEvents.observe(
                 it,
-                androidx.lifecycle.Observer { events ->
+                Observer { events ->
                     monthEvents = events
-                    GridAdapter = CalGridAdapter(requireContext(),selDate,monthEvents)
+                    GridAdapter.updateEvents(monthEvents)
                     CalGrid.adapter = GridAdapter
                 }
             )
             viewModel.SelectableEvents.observe(
                 it,
-                androidx.lifecycle.Observer {events ->
+                Observer {events ->
                     RecAdapter.updateEvents(events)
+                }
+            )
+            viewModel.alerts.observe(
+                it,
+                Observer { alerts ->
+                    GridAdapter.updateAlerts(alerts)
+                    CalGrid.adapter = GridAdapter
                 }
             )
         }
@@ -96,7 +109,8 @@ class CalenderFragment : Fragment() {
     }
 
     private fun setRecyclerView() {
-        RecAdapter = EventsRecyclerAdapter(listOf())
+        val events = viewModel.SelectableEvents.value
+        RecAdapter = EventsRecyclerAdapter(events?:listOf())
         RecAdapter.eventClickListener.observe(
             this,
             androidx.lifecycle.Observer {
@@ -116,7 +130,7 @@ class CalenderFragment : Fragment() {
         }
 
         PrevMonthBtn.setOnClickListener {
-            viewModel.listen(ListenTo.PreviourMonthClicked)
+            viewModel.listen(ListenTo.PreviousMonthClicked)
         }
 
         NextMonthBtn.setOnClickListener {

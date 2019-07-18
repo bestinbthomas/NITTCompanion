@@ -6,7 +6,7 @@ import java.util.*
 
 data class Course(var name : String = "",
                   var credit : Int = 0,
-                  var classEvent : ClassEvent = ClassEvent(),
+                  var classEvent : ClassEvent = ClassEvent(islab = false),
                   @Exclude var ID : String = Calendar.getInstance().timeInMillis.toString()) {
 
 
