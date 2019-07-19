@@ -120,8 +120,8 @@ class EventCreateFragment : Fragment() {
             ListenTo.UpdateEvent(
                 Event(
                     EventDetailName.editText!!.text.toString(),
-                    startDate,
-                    endDate,
+                    startDate.timeInMillis,
+                    endDate.timeInMillis,
                     typeSpinner.selectedItem.toString(),
                     courses[CourseSpinner.selectedItemPosition].ID,
                     event.ID
@@ -135,6 +135,8 @@ class EventCreateFragment : Fragment() {
 
 
     private fun setViews() {
+        startDate.timeInMillis = event.startDate
+        endDate.timeInMillis = event.endDate
         val coursenames = mutableListOf<String>()
         courses.forEach {
             coursenames.add(it.name)

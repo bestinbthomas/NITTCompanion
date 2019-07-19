@@ -15,6 +15,7 @@ import com.example.nittcompanion.common.objects.Alert
 import com.example.nittcompanion.common.objects.Course
 import com.example.nittcompanion.common.objects.Event
 import kotlinx.android.synthetic.main.fragment_event_detail.*
+import java.util.*
 
 class EventDetailFragment : Fragment() {
     private lateinit var event : Event
@@ -45,14 +46,19 @@ class EventDetailFragment : Fragment() {
         }
 
         EventDetailName.text = event.name
-        Date.text = event.startDate.getDateInFormat()
-        EventStartTime.text = event.startDate.getTimeInFormat()
-        EventEndTime.text = event.endDate.getTimeInFormat()
-        if (event.type == TYPE_CLASS && alert) {
-            DidYouAttendCard.visibility = View.VISIBLE
+        Date.text = Calendar.getInstance().getCalEnderWithMillis(event.startDate).getDateInFormat()
+        EventStartTime.text = Calendar.getInstance().getCalEnderWithMillis(event.startDate).getTimeInFormat()
+        EventEndTime.text = Calendar.getInstance().getCalEnderWithMillis(event.endDate).getTimeInFormat()
+        if (event.type == TYPE_CLASS) {
             attendanceTxt.visibility = View.VISIBLE
             EventAttendance.text = requireActivity().resources.getString(R.string.attendenceWithPercent,course.attendance)
             EventAttendance.visibility = View.VISIBLE
+            if (alert) {
+                DidYouAttendCard.visibility = View.VISIBLE
+
+            } else {
+                DidYouAttendCard.visibility = View.GONE
+            }
         } else {
             DidYouAttendCard.visibility = View.GONE
             attendanceTxt.visibility = View.GONE
@@ -95,9 +101,12 @@ class EventDetailFragment : Fragment() {
             findNavController().navigate(direction)
         }
         EventAttendedPositive.setOnClickListener {
+            DidYouAttendCard.visibility = View.GONE
             viewModel.listen(ListenTo.ClassAttended)
+
         }
         EventAttendedPositive.setOnClickListener {
+            DidYouAttendCard.visibility = View.GONE
             viewModel.listen(ListenTo.ClassBunked)
         }
     }

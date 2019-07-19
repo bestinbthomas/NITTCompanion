@@ -10,13 +10,13 @@ import java.util.*
 interface IRepo {
     suspend fun getEventsIn(field:Int = Calendar.MONTH, date: Calendar) : Result<Exception,List<Event>>
 
-    suspend fun getEventsByType(courseid:String,vararg eventType: String) : Result<Exception,List<Event>>
+    suspend fun getAlertEvents(courseid:String) : Result<Exception,List<Event>>
 
     suspend fun getUpcommingEvents(noOfEvents: Int) : Result<Exception,List<Event>>
 
     fun getCources() : LiveData<List<Course>>
 
-    suspend fun updateCourse(course: Course) : Result<Exception,Unit>
+    suspend fun updateCourse(course: Course,SyncInFirebase : Boolean) : Result<Exception,Unit>
 
     suspend fun updateEvent(event: Event) : Result<Exception,Unit>
 
@@ -29,4 +29,7 @@ interface IRepo {
     suspend fun addAlert(alert: Alert) : Result<Exception,Unit>
 
     suspend fun removeAlert(alert: Alert) : Result<Exception,Unit>
+
+    suspend fun initialise()
+
 }

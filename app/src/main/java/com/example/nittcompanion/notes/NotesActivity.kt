@@ -38,8 +38,7 @@ class NotesActivity : AppCompatActivity() {
     private val args : NotesActivityArgs by navArgs()
     private val user = FirebaseAuth.getInstance().currentUser
     private val storageReference = FirebaseStorage.getInstance().reference.child("user").child(user!!.uid)
-    private val firestoreReferance =
-        FirebaseFirestore.getInstance().collection("user").document(user!!.uid).collection(FIREBASE_COLLECTION_NOTES)
+    private val firestoreReferance = FirebaseFirestore.getInstance().collection("user").document(user!!.uid).collection(FIREBASE_COLLECTION_NOTES)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

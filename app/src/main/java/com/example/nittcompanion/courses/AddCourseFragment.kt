@@ -91,7 +91,8 @@ class AddCourseFragment : Fragment() {
                     CourseNameInputLayout.editText!!.text.toString(),
                     CourseCreditsInputLayout.editText!!.text.toString().toInt(),
                     classEvent
-                )
+                ),
+                false
             )
         )
         createSnackbar("Course Created",Snackbar.LENGTH_SHORT)

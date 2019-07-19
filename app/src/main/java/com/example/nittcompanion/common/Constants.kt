@@ -14,12 +14,12 @@ const val TYPE_OTHER = "OtherEvent"
 
 const val ERROR_EVENT_LOAD = "Error Loading Events"
 const val ERROR_EVENT_REMOVE = "Error cancelling Event"
-const val ERROR_EVENT_SYNC = "Error syncing Event"
 const val ERROR_REMOVING_COURSE = "Error removing Course"
 
 const val FIREBASE_COLLECTION_NOTES = "Notes"
 const val FIREBASE_COLLECTION_COURSES = "Courses"
 const val FIREBASE_COLLECTION_EVENTS = "Events"
+const val FIREBASE_COLLECTION_ALERTS = "Alerts"
 
 const val NOTE_UPLOADED_SUCESS = 1
 const val NOTE_UPLOADED_FAIL = -1

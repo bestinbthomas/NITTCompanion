@@ -7,7 +7,7 @@ import java.util.*
 open class ClassEvent(var classes: HashMap<Int, Int> = hashMapOf(),var islab : Boolean) {
 
 
-    private fun getStartTime(time: Calendar): Calendar {
+    private fun getStartTime(time: Calendar): Long {
         val slot = classes[time[Calendar.DAY_OF_WEEK]]
         if (slot!=-1) {
             when (slot) {
@@ -55,10 +55,10 @@ open class ClassEvent(var classes: HashMap<Int, Int> = hashMapOf(),var islab : B
 
             }
         }
-        return time
+        return time.timeInMillis
     }
 
-    private fun getLabStartTime(time: Calendar): Calendar {
+    private fun getLabStartTime(time: Calendar): Long {
         val slot = classes[time[Calendar.DAY_OF_WEEK]]
         if (slot!=-1) {
             when (slot) {
@@ -75,10 +75,10 @@ open class ClassEvent(var classes: HashMap<Int, Int> = hashMapOf(),var islab : B
 
             }
         }
-        return time
+        return time.timeInMillis
     }
 
-    private fun getEndTime(time: Calendar): Calendar {
+    private fun getEndTime(time: Calendar): Long {
         val slot = classes[time[Calendar.DAY_OF_WEEK]]
         if (slot!=-1) {
             when (slot) {
@@ -125,10 +125,10 @@ open class ClassEvent(var classes: HashMap<Int, Int> = hashMapOf(),var islab : B
 
             }
         }
-        return time
+        return time.timeInMillis
     }
 
-    private fun getLabEndTime(time: Calendar): Calendar {
+    private fun getLabEndTime(time: Calendar): Long {
         val slot = classes[time[Calendar.DAY_OF_WEEK]]
         if (slot!=-1) {
             when (slot) {
@@ -146,7 +146,7 @@ open class ClassEvent(var classes: HashMap<Int, Int> = hashMapOf(),var islab : B
 
             }
         }
-        return time
+        return time.timeInMillis
     }
 
     fun getEventOnDay(day: Calendar, courseName: String, courseId: String) =

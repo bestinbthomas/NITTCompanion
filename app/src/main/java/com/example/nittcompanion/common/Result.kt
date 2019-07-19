@@ -9,7 +9,7 @@ sealed class Result<out E,out V> {
         inline fun <V> build(function: () -> V): Result<Exception,V> =
             try {
                 Value(function.invoke())
-            }catch (e: java.lang.Exception){
+            }catch (e: Exception){
                 Error(e)
             }
     }

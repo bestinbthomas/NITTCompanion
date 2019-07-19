@@ -1,3 +1,5 @@
 package com.example.nittcompanion.common.objects
 
-data class Alert(val timeinmillis : Long, val eventId : String)
+import com.google.firebase.firestore.Exclude
+
+data class Alert(var timeinmillis : Long, @set:Exclude @get:Exclude var eventId : String)

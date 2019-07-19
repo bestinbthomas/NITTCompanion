@@ -64,7 +64,7 @@ class HomeFragment : Fragment() {
             viewModel.SelectableEvents.observe(
                 it,
                 Observer { event ->
-
+                    adapter.updateEvents(event)
                 }
             )
         }

@@ -6,6 +6,7 @@ import com.example.nittcompanion.common.objects.Event
 
 sealed class ListenTo {
 
+    object ActivityStarted : ListenTo()
     data class EventClicked(val position: Int) : ListenTo()
     data class DateSelected(val date: Int) : ListenTo()
     object PreviousMonthClicked : ListenTo()
@@ -22,6 +23,6 @@ sealed class ListenTo {
     object AddNewCourse : ListenTo()
     object CourseDetailStart : ListenTo()
     data class AddAlert(val alert : Alert) : ListenTo()
-    data class UpdateCourse(val course: Course) : ListenTo()
+    data class UpdateCourse(val course: Course,val syncInFireStore: Boolean) : ListenTo()
     data class UpdateEvent(val event: Event) : ListenTo()
 }

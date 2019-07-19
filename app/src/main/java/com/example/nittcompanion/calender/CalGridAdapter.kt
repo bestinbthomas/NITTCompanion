@@ -55,7 +55,7 @@ class CalGridAdapter(
                 calback.visibility = View.VISIBLE
             }
             events.forEach {
-                if (it.startDate[Calendar.DAY_OF_MONTH] == disp) {
+                if (Calendar.getInstance().getCalEnderWithMillis(it.startDate)[Calendar.DAY_OF_MONTH] == disp) {
                     if (it.type in arrayOf(TYPE_ASSIGNMENT, TYPE_ENDSEM, TYPE_CT))
                         cautionbar1.visibility = View.VISIBLE
                     else if (it.type == TYPE_OTHER)

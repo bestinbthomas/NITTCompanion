@@ -8,9 +8,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.example.nittcompanion.R
 import com.example.nittcompanion.common.ListenTo
+import com.example.nittcompanion.common.getCalEnderWithMillis
 import com.example.nittcompanion.common.getTimeInFormat
 import com.example.nittcompanion.common.objects.Event
 import kotlinx.android.synthetic.main.event_item.view.*
+import java.util.*
 
 class EventsRecyclerAdapter(private var events: List<Event>, val eventClickListener: MutableLiveData<ListenTo> = MutableLiveData()) : RecyclerView.Adapter<EventsRecyclerAdapter.MyHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyHolder {
@@ -29,7 +31,8 @@ class EventsRecyclerAdapter(private var events: List<Event>, val eventClickListe
     }
 
     override fun onBindViewHolder(holder: MyHolder, position: Int) {
-        holder.time.text = events[position].startDate.getTimeInFormat()
+        val millis = events[position].startDate
+        holder.time.text = Calendar.getInstance().getCalEnderWithMillis(millis).getTimeInFormat()
         holder.Evntname.text = events[position].name
 
         holder.itemView.setOnClickListener {

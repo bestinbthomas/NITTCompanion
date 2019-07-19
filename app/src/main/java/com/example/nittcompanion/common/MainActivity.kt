@@ -52,6 +52,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onStart() {
         super.onStart()
+        viewModel.listen(ListenTo.ActivityStarted)
         val user = when(val result=getCurrentUser()){
             is Result.Value -> result.value
             is Result.Error -> {

@@ -67,11 +67,16 @@ class BaseViewModel(protected val uicontext: CoroutineContext,private val repo:I
             is ListenTo.AddNewEvent -> addNewEvent()
             is ListenTo.AddNewCourse -> addNewCourse()
             is ListenTo.AddAlert -> addAlert(listenTo.alert)
-            is ListenTo.UpdateCourse -> updateCourse(listenTo.course)
+            is ListenTo.UpdateCourse -> updateCourse(listenTo.course,listenTo.syncInFireStore)
             is ListenTo.UpdateEvent -> updateEvent(listenTo.event)
             is ListenTo.CourseDetailStart -> initCourseDetail()
             is ListenTo.HomeFragmentStart -> initHomeFragment()
+            is ListenTo.ActivityStarted -> initialiseRepo()
         }
+    }
+
+    private fun initialiseRepo() = launch{
+        repo.initialise()
     }
 
     private fun initHomeFragment() = launch{
@@ -82,7 +87,7 @@ class BaseViewModel(protected val uicontext: CoroutineContext,private val repo:I
     }
 
     private fun initCourseDetail() =launch{
-         when(val res = repo.getEventsByType(DispCourse.value!!.ID, TYPE_ASSIGNMENT, TYPE_CT, TYPE_ENDSEM)){
+         when(val res = repo.getAlertEvents(DispCourse.value!!.ID)){
             is Result.Value -> privateSelectableEvents.value = res.value
             is Result.Error -> errorState.value = ERROR_EVENT_LOAD
         }
@@ -99,8 +104,8 @@ class BaseViewModel(protected val uicontext: CoroutineContext,private val repo:I
         launch { evaluateResult("update event",repo.updateEvent(event)) }
     }
 
-    private fun updateCourse(course: Course) {
-        launch {  evaluateResult("update courses",repo.updateCourse(course))}
+    private fun updateCourse(course: Course,syncInFirebase : Boolean) {
+        launch {  evaluateResult("update courses",repo.updateCourse(course,syncInFirebase))}
     }
 
     private fun addAlert(alert: Alert) {
@@ -131,7 +136,7 @@ class BaseViewModel(protected val uicontext: CoroutineContext,private val repo:I
         val courseID = SelEvent.value!!.courceid
         val course = Courses.value!!.find { it.ID == courseID }
         course!!.classBunked()
-        evaluateResult("update courses",repo.updateCourse(course))
+        evaluateResult("update courses",repo.updateCourse(course,true))
         val alert = alerts.value!!.find { it.eventId == DispEvent.value!!.ID }
         evaluateResult("remove alert",repo.removeAlert(alert!!))
 
@@ -141,7 +146,7 @@ class BaseViewModel(protected val uicontext: CoroutineContext,private val repo:I
         val courseID = SelEvent.value!!.courceid
         val course = Courses.value!!.find { it.ID == courseID }
         course!!.classAttended()
-        evaluateResult("update courses",repo.updateCourse(course))
+        evaluateResult("update courses",repo.updateCourse(course,true))
         val alert = alerts.value!!.find { it.eventId == DispEvent.value!!.ID }
         evaluateResult("remove alert",repo.removeAlert(alert!!))
     }
