@@ -14,7 +14,7 @@ import com.example.nittcompanion.common.factoryAndInjector.InjectorUtils
 import com.example.nittcompanion.common.objects.Alert
 import com.example.nittcompanion.common.objects.Course
 import com.example.nittcompanion.common.objects.Event
-import kotlinx.android.synthetic.main.fragment_event_detail.*
+import kotlinx.android.synthetic.main.fragment_event_detail.view.*
 import java.util.*
 
 class EventDetailFragment : Fragment() {
@@ -22,12 +22,15 @@ class EventDetailFragment : Fragment() {
     private  lateinit var course: Course
     private lateinit var viewModel: BaseViewModel
     private var alerts = listOf<Alert>()
+    private lateinit var mView : View
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_event_detail,container,false)
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        mView = view
+        retainInstance = true
         activity?.let{viewModel = ViewModelProviders.of(requireActivity(), InjectorUtils(requireActivity().application).provideBaseViewModelFactory()).get(BaseViewModel::class.java)}
 
         course = viewModel.DispCourse.value!!
@@ -37,7 +40,7 @@ class EventDetailFragment : Fragment() {
         setOnClicks()
     }
 
-    private fun setViews() {
+    private fun setViews() =activity?.let {
 
         alerts = viewModel.alerts.value?: listOf()
 
@@ -45,24 +48,24 @@ class EventDetailFragment : Fragment() {
             event.ID == it.eventId
         }
 
-        EventDetailName.text = event.name
-        Date.text = Calendar.getInstance().getCalEnderWithMillis(event.startDate).getDateInFormat()
-        EventStartTime.text = Calendar.getInstance().getCalEnderWithMillis(event.startDate).getTimeInFormat()
-        EventEndTime.text = Calendar.getInstance().getCalEnderWithMillis(event.endDate).getTimeInFormat()
+        mView.EventDetailName.text = event.name
+        mView.Date.text = Calendar.getInstance().getCalEnderWithMillis(event.startDate).getDateInFormat()
+        mView.EventStartTime.text = Calendar.getInstance().getCalEnderWithMillis(event.startDate).getTimeInFormat()
+        mView.EventEndTime.text = Calendar.getInstance().getCalEnderWithMillis(event.endDate).getTimeInFormat()
         if (event.type == TYPE_CLASS) {
-            attendanceTxt.visibility = View.VISIBLE
-            EventAttendance.text = requireActivity().resources.getString(R.string.attendenceWithPercent,course.attendance)
-            EventAttendance.visibility = View.VISIBLE
+            mView.attendanceTxt.visibility = View.VISIBLE
+            mView.EventAttendance.text = requireActivity().resources.getString(R.string.attendenceWithPercent,course.attendance)
+            mView.EventAttendance.visibility = View.VISIBLE
             if (alert) {
-                DidYouAttendCard.visibility = View.VISIBLE
+                mView.DidYouAttendCard.visibility = View.VISIBLE
 
             } else {
-                DidYouAttendCard.visibility = View.GONE
+                mView.DidYouAttendCard.visibility = View.GONE
             }
         } else {
-            DidYouAttendCard.visibility = View.GONE
-            attendanceTxt.visibility = View.GONE
-            EventAttendance.visibility = View.GONE
+            mView.DidYouAttendCard.visibility = View.GONE
+            mView.attendanceTxt.visibility = View.GONE
+            mView.EventAttendance.visibility = View.GONE
         }
     }
 
@@ -91,22 +94,22 @@ class EventDetailFragment : Fragment() {
         }
     }
 
-    private fun setOnClicks() {
-        CancelEvent.setOnClickListener{
+    private fun setOnClicks() =activity?.let {
+        mView.CancelEvent.setOnClickListener{
             viewModel.listen(ListenTo.CancellEvent)
             findNavController().popBackStack()
         }
-        EditEvent.setOnClickListener{
+        mView.EditEvent.setOnClickListener{
             val direction = EventDetailFragmentDirections.actionDestinationEventDetailToDestinationEventCreate(null)
             findNavController().navigate(direction)
         }
-        EventAttendedPositive.setOnClickListener {
-            DidYouAttendCard.visibility = View.GONE
+        mView.EventAttendedPositive.setOnClickListener {
+            mView.DidYouAttendCard.visibility = View.GONE
             viewModel.listen(ListenTo.ClassAttended)
 
         }
-        EventAttendedPositive.setOnClickListener {
-            DidYouAttendCard.visibility = View.GONE
+        mView.EventAttendedPositive.setOnClickListener {
+            mView.DidYouAttendCard.visibility = View.GONE
             viewModel.listen(ListenTo.ClassBunked)
         }
     }

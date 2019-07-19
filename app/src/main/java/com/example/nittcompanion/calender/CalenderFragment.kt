@@ -20,7 +20,7 @@ import com.example.nittcompanion.common.factoryAndInjector.InjectorUtils
 import com.example.nittcompanion.common.objects.Event
 import com.example.nittcompanion.event.EventsRecyclerAdapter
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.fragment_calender.*
+import kotlinx.android.synthetic.main.fragment_calender.view.*
 import java.util.*
 
 class CalenderFragment : Fragment() {
@@ -29,7 +29,8 @@ class CalenderFragment : Fragment() {
     private lateinit var GridAdapter: CalGridAdapter
     private lateinit var MonthArray: Array<String>
     private lateinit var selDate: Calendar
-    private var monthEvents :List<Event> = listOf()
+    private lateinit var mView: View
+    private var monthEvents: List<Event> = listOf()
     private val TAG = "CalenderFragment"
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
@@ -38,8 +39,11 @@ class CalenderFragment : Fragment() {
 
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        mView = view
+        retainInstance = true
         activity?.let {
             viewModel = ViewModelProviders.of(it, InjectorUtils(it.application).provideBaseViewModelFactory())
                 .get(BaseViewModel::class.java)
@@ -52,21 +56,28 @@ class CalenderFragment : Fragment() {
         setRecyclerView()
         setObservations()
         setClickListeners()
-
-
     }
 
-    private fun setUpCalender() {
+    private fun setUpCalender() = activity?.let {
         val events = viewModel.MonthlyEvents.value
         val alerts = viewModel.alerts.value
         MonthArray = resources.getStringArray(R.array.Months)
         selDate = Calendar.getInstance()
-        GridAdapter = CalGridAdapter(context = requireContext(),date =  selDate,events = events?: listOf(),alerts = alerts?: listOf())
-        CalGrid.adapter = GridAdapter
-        MonthNameTxt.text = requireActivity().resources.getString(R.string.Month_Year,MonthArray[selDate.get(Calendar.MONTH)],selDate.get(Calendar.YEAR))
+        GridAdapter = CalGridAdapter(
+            context = requireContext(),
+            date = selDate,
+            events = events ?: listOf(),
+            alerts = alerts ?: listOf()
+        )
+        mView.CalGrid.adapter = GridAdapter
+        mView.MonthNameTxt.text = requireActivity().resources.getString(
+            R.string.Month_Year,
+            MonthArray[selDate.get(Calendar.MONTH)],
+            selDate.get(Calendar.YEAR)
+        )
     }
 
-    private fun setObservations() {
+    private fun setObservations() = activity?.let {
 
         activity?.let {
             viewModel.error.observe(
@@ -78,9 +89,13 @@ class CalenderFragment : Fragment() {
             viewModel.DispDate.observe(it,
                 Observer { cal ->
                     GridAdapter.updateDate(cal)
-                    CalGrid.adapter = GridAdapter
-                    MonthNameTxt.text = requireActivity().resources.getString(R.string.Month_Year,MonthArray[cal.get(Calendar.MONTH)],cal.get(Calendar.YEAR))
+                    GridAdapter.notifyDataSetChanged()
                     selDate = cal
+                    mView.MonthNameTxt.text = it.resources.getString(
+                        R.string.Month_Year,
+                        MonthArray[selDate.get(Calendar.MONTH)],
+                        selDate.get(Calendar.YEAR)
+                    )
                     Log.d(TAG, "Month Changed to ${cal.get(Calendar.MONTH)}")
                 })
             viewModel.MonthlyEvents.observe(
@@ -88,12 +103,12 @@ class CalenderFragment : Fragment() {
                 Observer { events ->
                     monthEvents = events
                     GridAdapter.updateEvents(monthEvents)
-                    CalGrid.adapter = GridAdapter
+                    GridAdapter.notifyDataSetChanged()
                 }
             )
             viewModel.SelectableEvents.observe(
                 it,
-                Observer {events ->
+                Observer { events ->
                     RecAdapter.updateEvents(events)
                 }
             )
@@ -101,43 +116,43 @@ class CalenderFragment : Fragment() {
                 it,
                 Observer { alerts ->
                     GridAdapter.updateAlerts(alerts)
-                    CalGrid.adapter = GridAdapter
+                    GridAdapter.notifyDataSetChanged()
                 }
             )
         }
 
     }
 
-    private fun setRecyclerView() {
+    private fun setRecyclerView() = activity?.let {
         val events = viewModel.SelectableEvents.value
-        RecAdapter = EventsRecyclerAdapter(events?:listOf())
+        RecAdapter = EventsRecyclerAdapter(events ?: listOf())
         RecAdapter.eventClickListener.observe(
             this,
-            androidx.lifecycle.Observer {
+            Observer {
                 viewModel.listen(it)
             }
         )
-        EventRecycler.adapter=RecAdapter
-        EventRecycler.itemAnimator = DefaultItemAnimator()
-        EventRecycler.addItemDecoration(DividerItemDecoration(requireActivity(),DividerItemDecoration.VERTICAL))
-        EventRecycler.layoutManager = LinearLayoutManager(requireActivity())
+        mView.EventRecycler.adapter = RecAdapter
+        mView.EventRecycler.itemAnimator = DefaultItemAnimator()
+        mView.EventRecycler.addItemDecoration(DividerItemDecoration(requireActivity(), DividerItemDecoration.VERTICAL))
+        mView.EventRecycler.layoutManager = LinearLayoutManager(requireActivity())
     }
 
-    private fun setClickListeners() {
-        CalGrid.setOnItemClickListener { _, _, _, id ->
+    private fun setClickListeners() = activity?.let {
+        mView.CalGrid.setOnItemClickListener { _, _, _, id ->
             viewModel.listen(ListenTo.DateSelected(id.toInt()))
             Log.d(TAG, "date clicked $id")
         }
 
-        PrevMonthBtn.setOnClickListener {
+        mView.PrevMonthBtn.setOnClickListener {
             viewModel.listen(ListenTo.PreviousMonthClicked)
         }
 
-        NextMonthBtn.setOnClickListener {
+        mView.NextMonthBtn.setOnClickListener {
             viewModel.listen(ListenTo.NextMonthClicked)
         }
 
-        AddEventFAB.setOnClickListener {
+        mView.AddEventFAB.setOnClickListener {
             viewModel.listen(ListenTo.AddNewEvent)
             findNavController().navigate(R.id.action_destination_calender_to_destination_event_create)
         }

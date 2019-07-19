@@ -69,10 +69,11 @@
             app:layout_constraintTop_toTopOf="@+id/MonSlotPicker"
             app:layout_constraintBottom_toBottomOf="@+id/MonSlotPicker"
             app:layout_constraintVertical_bias="0.509" app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintHorizontal_bias="0.5" app:layout_constraintEnd_toStartOf="@+id/FriSlotPicker"/>
+            app:layout_constraintHorizontal_bias="0.5" app:layout_constraintEnd_toStartOf="@+id/FriSlotPicker"
+            android:layout_marginStart="32dp"/>
 
-    <NumberPicker
-            android:id="@+id/MonSlotPicker" android:layout_width="wrap_content" android:layout_height="0dp"
+    <Spinner
+            android:id="@+id/MonSlotPicker" android:layout_width="0dp" android:layout_height="0dp"
             app:layout_constraintTop_toBottomOf="@+id/textView6"
             app:layout_constraintBottom_toTopOf="@+id/TueSlotPicker" android:layout_marginTop="24dp"
             app:layout_constraintStart_toStartOf="@+id/TueSlotPicker"
@@ -87,8 +88,8 @@
             app:layout_constraintTop_toTopOf="@+id/TueSlotPicker"
             app:layout_constraintBottom_toBottomOf="@+id/TueSlotPicker"/>
 
-    <NumberPicker
-            android:id="@+id/TueSlotPicker" android:layout_width="wrap_content" android:layout_height="0dp"
+    <Spinner
+            android:id="@+id/TueSlotPicker" android:layout_width="0dp" android:layout_height="0dp"
             app:layout_constraintTop_toBottomOf="@+id/MonSlotPicker"
             app:layout_constraintBottom_toTopOf="@+id/WedSlotPicker"
             app:layout_constraintStart_toStartOf="@+id/WedSlotPicker"
@@ -104,8 +105,8 @@
             app:layout_constraintTop_toTopOf="@+id/WedSlotPicker"
             app:layout_constraintBottom_toBottomOf="@+id/WedSlotPicker"/>
 
-    <NumberPicker
-            android:id="@+id/WedSlotPicker" android:layout_width="wrap_content" android:layout_height="0dp"
+    <Spinner
+            android:id="@+id/WedSlotPicker" android:layout_width="0dp" android:layout_height="0dp"
             app:layout_constraintTop_toBottomOf="@+id/TueSlotPicker"
             app:layout_constraintBottom_toTopOf="@+id/ThuSlotPicker"
             app:layout_constraintStart_toStartOf="@+id/ThuSlotPicker"
@@ -121,8 +122,8 @@
             app:layout_constraintTop_toTopOf="@+id/ThuSlotPicker"
             app:layout_constraintBottom_toBottomOf="@+id/ThuSlotPicker"/>
 
-    <NumberPicker
-            android:id="@+id/ThuSlotPicker" android:layout_width="wrap_content" android:layout_height="0dp"
+    <Spinner
+            android:id="@+id/ThuSlotPicker" android:layout_width="0dp" android:layout_height="0dp"
             app:layout_constraintTop_toBottomOf="@+id/WedSlotPicker"
             app:layout_constraintBottom_toTopOf="@+id/FriSlotPicker"
             app:layout_constraintStart_toStartOf="@+id/FriSlotPicker"
@@ -138,8 +139,8 @@
             app:layout_constraintTop_toTopOf="@+id/FriSlotPicker"
             app:layout_constraintBottom_toBottomOf="@+id/FriSlotPicker"/>
 
-    <NumberPicker
-            android:id="@+id/FriSlotPicker" android:layout_width="wrap_content" android:layout_height="0dp"
+    <Spinner
+            android:id="@+id/FriSlotPicker" android:layout_width="0dp" android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintTop_toBottomOf="@+id/ThuSlotPicker"
             android:layout_marginTop="8dp" android:layout_marginBottom="16dp"
             app:layout_constraintStart_toEndOf="@+id/textViewMon" app:layout_constraintHorizontal_bias="0.5"

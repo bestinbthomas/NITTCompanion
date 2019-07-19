@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.graphics.PorterDuff
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
@@ -115,6 +116,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        Log.d("Main Activity", "navigation item selected")
         when(item.itemId){
             R.id.website -> startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.nitt.edu/")))
             R.id.forms -> startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.nitt.edu/home/academics/formats/")))

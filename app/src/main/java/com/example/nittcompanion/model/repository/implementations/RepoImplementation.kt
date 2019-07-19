@@ -1,6 +1,5 @@
 package com.example.nittcompanion.model.repository.implementations
 
-import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -257,7 +256,7 @@ class RepoImplementation private constructor() : IRepo {
     }
 
     private fun logEror(message: String, e: Exception) {
-        Log.e(TAG, message, e)
+        Log.e("Repository", message, e)
     }
 
 }

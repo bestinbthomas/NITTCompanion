@@ -19,7 +19,7 @@ import com.example.nittcompanion.common.ListenTo
 import com.example.nittcompanion.common.factoryAndInjector.InjectorUtils
 import com.example.nittcompanion.common.objects.Course
 import com.example.nittcompanion.event.EventsRecyclerAdapter
-import kotlinx.android.synthetic.main.fragment_course_detail.*
+import kotlinx.android.synthetic.main.fragment_course_detail.view.*
 
 
 class CourseDetailFragment : Fragment() {
@@ -27,7 +27,7 @@ class CourseDetailFragment : Fragment() {
     private lateinit var viewModel: BaseViewModel
     private lateinit var course: Course
     private lateinit var adapter : EventsRecyclerAdapter
-
+    private lateinit var mView : View
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -35,9 +35,12 @@ class CourseDetailFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_course_detail, container, false)
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
+        mView = view
+
+        retainInstance = true
         activity?.let{viewModel = ViewModelProviders.of(requireActivity(), InjectorUtils(requireActivity().application).provideBaseViewModelFactory()).get(
             BaseViewModel::class.java)}
 
@@ -49,12 +52,12 @@ class CourseDetailFragment : Fragment() {
         setOnClicks()
     }
 
-    private fun setUpRecycler() {
+    private fun setUpRecycler()  =activity?.let{
         adapter = EventsRecyclerAdapter(listOf())
-        CourseAlertsRecView.adapter = adapter
-        CourseAlertsRecView.itemAnimator = DefaultItemAnimator()
-        CourseAlertsRecView.addItemDecoration(DividerItemDecoration(requireActivity(), DividerItemDecoration.VERTICAL))
-        CourseAlertsRecView.layoutManager = LinearLayoutManager(requireActivity())
+        mView.CourseAlertsRecView.adapter = adapter
+        mView.CourseAlertsRecView.itemAnimator = DefaultItemAnimator()
+        mView.CourseAlertsRecView.addItemDecoration(DividerItemDecoration(requireActivity(), DividerItemDecoration.VERTICAL))
+        mView.CourseAlertsRecView.layoutManager = LinearLayoutManager(requireActivity())
         adapter.eventClickListener.observe(
             this,
             Observer {
@@ -64,17 +67,17 @@ class CourseDetailFragment : Fragment() {
         )
     }
 
-    private fun setOnClicks() {
-        AddEventBtn.setOnClickListener {
+    private fun setOnClicks()  =activity?.let{
+        mView.AddEventBtn.setOnClickListener {
             viewModel.listen(ListenTo.AddEventForCourse)
             val directions = CourseDetailFragmentDirections.actionDestinationCourseDetailToDestinationEventCreate(course.ID)
             findNavController().navigate(directions)
         }
-        NotesBtn.setOnClickListener {
+        mView.NotesBtn.setOnClickListener {
             val directions = CourseDetailFragmentDirections.actionDestinationCourseDetailToDestinationNotes(course.ID,course.name)
             findNavController().navigate(directions)
         }
-        DeleteCourseBtn.setOnClickListener {
+        mView.DeleteCourseBtn.setOnClickListener {
             val alert :AlertDialog = AlertDialog.Builder(requireContext())
                 .setTitle("Confirm Delete")
                 .setMessage("Do you really want to delete the course ")
@@ -89,39 +92,39 @@ class CourseDetailFragment : Fragment() {
             alert.show()
         }
 
-        EditCourseBtn.setOnClickListener {
+        mView.EditCourseBtn.setOnClickListener {
             findNavController().navigate(R.id.action_destination_course_detail_to_destination_add_courses)
         }
-        attendedPlus.setOnClickListener {
+        mView.attendedPlus.setOnClickListener {
             course.attended++
             course.calculateClasses()
             viewModel.listen(ListenTo.UpdateCourse(course,false))
         }
-        attendedMinus.setOnClickListener {
+        mView.attendedMinus.setOnClickListener {
             course.attended--
             course.calculateClasses()
             viewModel.listen(ListenTo.UpdateCourse(course,false))
         }
-        bunkedPlus.setOnClickListener {
+        mView.bunkedPlus.setOnClickListener {
             course.notAttended++
             course.calculateClasses()
             viewModel.listen(ListenTo.UpdateCourse(course,false))
         }
-        bunkedPlus.setOnClickListener {
+        mView.bunkedPlus.setOnClickListener {
             course.notAttended--
             course.calculateClasses()
             viewModel.listen(ListenTo.UpdateCourse(course,false))
         }
     }
 
-    private fun setViews() {
-        CourseName.text = course.name
-        Credits.text = requireActivity().resources.getString(R.string.credits_disp,course.credit)
-        EventAttendance.text = requireActivity().resources.getString(R.string.attendenceWithPercent,course.attendance)
+    private fun setViews() =activity?.let {
+        mView.CourseName.text = course.name
+        mView.Credits.text = requireActivity().resources.getString(R.string.credits_disp,course.credit)
+        mView.EventAttendance.text = requireActivity().resources.getString(R.string.attendenceWithPercent,course.attendance)
         val classtoattend :Int = course.classToAttend.value!!
-        AttendenceStatus.text = if(classtoattend<0) requireActivity().resources.getString(R.string.courseStatusBunk,(classtoattend*-1)) else requireActivity().resources.getString(R.string.courseStatusAttend,classtoattend)
-        Attended.text = requireActivity().resources.getString(R.string.attended,course.attended)
-        Bunked.text = requireActivity().resources.getString(R.string.bunked,course.notAttended)
+        mView.AttendenceStatus.text = if(classtoattend<0) requireActivity().resources.getString(R.string.courseStatusBunk,(classtoattend*-1)) else requireActivity().resources.getString(R.string.courseStatusAttend,classtoattend)
+        mView.Attended.text = requireActivity().resources.getString(R.string.attended,course.attended)
+        mView.Bunked.text = requireActivity().resources.getString(R.string.bunked,course.notAttended)
     }
 
     private fun setObservations() {

@@ -4,11 +4,11 @@ import com.example.nittcompanion.common.TYPE_CLASS
 import com.example.nittcompanion.common.TYPE_LAB
 import java.util.*
 
-open class ClassEvent(var classes: HashMap<Int, Int> = hashMapOf(),var islab : Boolean) {
+open class ClassEvent(var classes: HashMap<String, Int> = hashMapOf(),var islab : Boolean) {
 
 
     private fun getStartTime(time: Calendar): Long {
-        val slot = classes[time[Calendar.DAY_OF_WEEK]]
+        val slot = classes[time[Calendar.DAY_OF_WEEK].toString()]
         if (slot!=-1) {
             when (slot) {
                 1 -> {
@@ -59,7 +59,7 @@ open class ClassEvent(var classes: HashMap<Int, Int> = hashMapOf(),var islab : B
     }
 
     private fun getLabStartTime(time: Calendar): Long {
-        val slot = classes[time[Calendar.DAY_OF_WEEK]]
+        val slot = classes[time[Calendar.DAY_OF_WEEK].toString()]
         if (slot!=-1) {
             when (slot) {
                 1 -> {
@@ -79,7 +79,7 @@ open class ClassEvent(var classes: HashMap<Int, Int> = hashMapOf(),var islab : B
     }
 
     private fun getEndTime(time: Calendar): Long {
-        val slot = classes[time[Calendar.DAY_OF_WEEK]]
+        val slot = classes[time[Calendar.DAY_OF_WEEK].toString()]
         if (slot!=-1) {
             when (slot) {
                 1 -> {
@@ -129,7 +129,7 @@ open class ClassEvent(var classes: HashMap<Int, Int> = hashMapOf(),var islab : B
     }
 
     private fun getLabEndTime(time: Calendar): Long {
-        val slot = classes[time[Calendar.DAY_OF_WEEK]]
+        val slot = classes[time[Calendar.DAY_OF_WEEK].toString()]
         if (slot!=-1) {
             when (slot) {
                 1 -> {
@@ -150,7 +150,7 @@ open class ClassEvent(var classes: HashMap<Int, Int> = hashMapOf(),var islab : B
     }
 
     fun getEventOnDay(day: Calendar, courseName: String, courseId: String) =
-        if (classes[day[Calendar.DAY_OF_WEEK]] != 0)
+        if (classes[day[Calendar.DAY_OF_WEEK].toString()] != 0)
             Event("$courseName ${if (islab)"Lab" else "Class"} ", if(islab)getLabStartTime(day)else getStartTime(day), if(islab) getLabEndTime(day) else getEndTime(day), if(islab) TYPE_LAB else TYPE_CLASS, courseId)
         else null
 }

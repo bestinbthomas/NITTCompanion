@@ -19,7 +19,7 @@ import com.example.nittcompanion.common.objects.Alert
 import com.example.nittcompanion.common.objects.Course
 import com.example.nittcompanion.common.objects.Event
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.fragment_event_create.*
+import kotlinx.android.synthetic.main.fragment_event_create.view.*
 import java.util.*
 
 class EventCreateFragment : Fragment() {
@@ -28,12 +28,15 @@ class EventCreateFragment : Fragment() {
     private lateinit var event: Event
     private val startDate = Calendar.getInstance()
     private val endDate = Calendar.getInstance()
+    private lateinit var mView: View
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_event_create, container, false)
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        mView = view
+        retainInstance = true
         activity?.let {
             viewModel = ViewModelProviders.of(
                 requireActivity(),
@@ -42,18 +45,25 @@ class EventCreateFragment : Fragment() {
         }
 
         event = viewModel.DispEvent.value!!
-        courses = viewModel.Courses.value!!
+        courses = viewModel.Courses.value?: listOf()
+
         setObservations()
         setViews()
         setClickListeners()
 
     }
 
-    private fun setClickListeners() {
-        SaveEvent.setOnClickListener {
+    override fun onStart() {
+        super.onStart()
+
+
+    }
+
+    private fun setClickListeners() = activity?.let {
+        mView.SaveEvent.setOnClickListener {
             saveEvent()
         }
-        Date.setOnClickListener {
+        mView.Date.setOnClickListener {
             val datePickerlistener = DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
                 startDate[Calendar.YEAR] = year
                 startDate[Calendar.MONTH] = month
@@ -61,7 +71,7 @@ class EventCreateFragment : Fragment() {
                 endDate[Calendar.YEAR] = year
                 endDate[Calendar.MONTH] = month
                 endDate[Calendar.DAY_OF_MONTH] = dayOfMonth
-                Date.text = startDate.getDateInFormat()
+                mView.Date.text = startDate.getDateInFormat()
             }
             DatePickerDialog(
                 requireContext(),
@@ -71,12 +81,12 @@ class EventCreateFragment : Fragment() {
                 startDate[Calendar.DAY_OF_MONTH]
             ).show()
         }
-        EventStartTime.setOnClickListener {
+        mView.EventStartTime.setOnClickListener {
             val startTimePickerListener = TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
                 startDate[Calendar.HOUR_OF_DAY] = hourOfDay
                 startDate[Calendar.MINUTE] = minute
                 startDate[Calendar.SECOND] = 5
-                EventStartTime.text = startDate.getTimeInFormat()
+                mView.EventStartTime.text = startDate.getTimeInFormat()
             }
             TimePickerDialog(
                 requireContext(),
@@ -84,14 +94,14 @@ class EventCreateFragment : Fragment() {
                 startDate[Calendar.HOUR_OF_DAY],
                 startDate[Calendar.MINUTE],
                 true
-            )
+            ).show()
         }
-        EventEndTime.setOnClickListener {
+        mView.EventEndTime.setOnClickListener {
             val endTimePickerListener = TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
                 endDate[Calendar.HOUR_OF_DAY] = hourOfDay
                 endDate[Calendar.MINUTE] = minute
                 endDate[Calendar.SECOND] = 5
-                EventEndTime.text = endDate.getTimeInFormat()
+                mView.EventEndTime.text = endDate.getTimeInFormat()
             }
             TimePickerDialog(
                 requireContext(),
@@ -99,31 +109,35 @@ class EventCreateFragment : Fragment() {
                 endDate[Calendar.HOUR_OF_DAY],
                 endDate[Calendar.MINUTE],
                 true
-            )
+            ).show()
         }
     }
 
-    private fun validateName(): Boolean = if (EventDetailName.editText!!.text.toString().isEmpty()) {
-        EventDetailName.error = "please enter a name"
-        true
-    } else {
-        EventDetailName.error = null
+    private fun validateName(): Boolean = if (mView.EventDetailName.editText!!.text.toString().isEmpty()) {
+        mView.EventDetailName.error = "please enter a name"
         false
+    } else {
+        mView.EventDetailName.error = null
+        true
     }
 
     private fun saveEvent() {
         if (!validateName()) return
 
-        if (ImpSwitch.isChecked)
+        if (mView.ImpSwitch.isChecked)
             viewModel.listen(ListenTo.AddAlert(Alert(startDate.timeInMillis, event.ID)))
         viewModel.listen(
             ListenTo.UpdateEvent(
                 Event(
-                    EventDetailName.editText!!.text.toString(),
+                    mView.EventDetailName.editText!!.text.toString(),
                     startDate.timeInMillis,
                     endDate.timeInMillis,
-                    typeSpinner.selectedItem.toString(),
-                    courses[CourseSpinner.selectedItemPosition].ID,
+                    mView.typeSpinner.selectedItem.toString(),
+                    try {
+                        courses[mView.CourseSpinner.selectedItemPosition].ID
+                    } catch (e : Exception){
+                        ""
+                    },
                     event.ID
                 )
             )
@@ -134,23 +148,24 @@ class EventCreateFragment : Fragment() {
     }
 
 
-    private fun setViews() {
+    private fun setViews() = activity?.let {
         startDate.timeInMillis = event.startDate
         endDate.timeInMillis = event.endDate
         val coursenames = mutableListOf<String>()
         courses.forEach {
             coursenames.add(it.name)
         }
-        EventDetailName.editText!!.setText(event.name, TextView.BufferType.EDITABLE)
-        CourseSpinner.adapter =
+        if(event.name.isNotBlank())
+            mView.EventDetailName.editText!!.setText(event.name, TextView.BufferType.EDITABLE)
+        mView.CourseSpinner.adapter =
             ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, coursenames)
-        if(event.courceid.isNotEmpty()) {
-            CourseSpinner.setSelection(courses.indexOf(courses.filter {
+        if(event.courceid.isNotBlank()) {
+            mView.CourseSpinner.setSelection(courses.indexOf(courses.filter {
                 it.ID == event.courceid
             }[0]))
         }
-        if(event.type.isNotEmpty()) {
-            typeSpinner.setSelection(
+        if(event.type.isNotBlank()) {
+            mView.typeSpinner.setSelection(
                 when (event.type) {
                     TYPE_CLASS -> 0
                     TYPE_CT -> 1
@@ -162,9 +177,9 @@ class EventCreateFragment : Fragment() {
                 }
             )
         }
-        Date.text = startDate.getDateInFormat()
-        EventStartTime.text = startDate.getTimeInFormat()
-        EventEndTime.text = endDate.getTimeInFormat()
+        mView.Date.text = startDate.getDateInFormat()
+        mView.EventStartTime.text = startDate.getTimeInFormat()
+        mView.EventEndTime.text = endDate.getTimeInFormat()
     }
 
     private fun setObservations() {

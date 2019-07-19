@@ -23,9 +23,9 @@ class CalGridAdapter(
     var alerts: List<Alert> = listOf()
 ) : BaseAdapter() {
 
-    private var tempdate = date.copy()
+    //private var tempdate = date.copy()
     private val noOfDays = date.getActualMaximum(Calendar.DAY_OF_MONTH)
-    private val bufferDate = tempdate.getbeforeFirstDayOfMonth()
+    private val bufferDate get() = date.getbeforeFirstDayOfMonth()
 
     init {
     }
@@ -88,6 +88,7 @@ class CalGridAdapter(
 
     fun updateDate(date : Calendar){
         this.date = date
+
     }
 
     fun updateEvents(events: List<Event>){

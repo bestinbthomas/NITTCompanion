@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp" app:layout_constraintEnd_toEndOf="parent" android:layout_marginTop="32dp"
-            app:layout_constraintTop_toBottomOf="@+id/materialCardView2" android:id="@+id/cardView2">
+            app:layout_constraintTop_toBottomOf="@+id/materialCardView2" android:id="@+id/CoursesCard">
         <TextView
                 android:text="@string/see_courses"
                 android:layout_width="wrap_content"
@@ -48,7 +48,7 @@
             app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp" app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0" android:layout_marginTop="32dp"
-            app:layout_constraintTop_toBottomOf="@+id/cardView2" android:id="@+id/materialCardView3">
+            app:layout_constraintTop_toBottomOf="@+id/CoursesCard" android:id="@+id/NotesLinkCard">
         <TextView
                 android:text="@string/add_common_notes"
                 android:layout_width="wrap_content"

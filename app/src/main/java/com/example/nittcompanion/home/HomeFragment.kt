@@ -19,18 +19,21 @@ import com.example.nittcompanion.common.ListenTo
 import com.example.nittcompanion.common.factoryAndInjector.InjectorUtils
 import com.example.nittcompanion.common.objects.Event
 import com.example.nittcompanion.event.EventsRecyclerAdapter
-import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.fragment_home.view.*
 
 class HomeFragment : Fragment() {
     private lateinit var viewModel: BaseViewModel
     private lateinit var adapter: EventsRecyclerAdapter
     private var events = listOf<Event>()
+    private lateinit var mView :View
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_home,container,false);
+        return inflater.inflate(R.layout.fragment_home,container,false)
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        mView = view
+        retainInstance = true
         activity?.let {
             viewModel = ViewModelProviders.of(
                 requireActivity(),
@@ -45,14 +48,14 @@ class HomeFragment : Fragment() {
         setOnClicks()
     }
 
-    private fun setOnClicks() {
-        MoreEvents.setOnClickListener {
+    private fun setOnClicks()  =activity?.let{
+        mView.MoreEvents.setOnClickListener {
             findNavController().navigate(R.id.action_destination_home_to_destination_calender)
         }
-        CoursesLink.setOnClickListener {
+        mView.CoursesCard.setOnClickListener {
             findNavController().navigate(R.id.action_destination_home_to_destination_courses)
         }
-        NotesLink.setOnClickListener {
+        mView.NotesLinkCard.setOnClickListener {
             val directions = HomeFragmentDirections.actionDestinationHomeToDestinationNotes(HOME_COURSE_ID,
                 HOME_COURSE_NAME)
             findNavController().navigate(directions)
@@ -70,7 +73,7 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun setRecycler() {
+    private fun setRecycler()  =activity?.let{
         adapter = EventsRecyclerAdapter(events)
         adapter.eventClickListener.observe(
             this,
@@ -79,9 +82,9 @@ class HomeFragment : Fragment() {
                 viewModel.listen(it)
             }
         )
-        UpcomingEventRec.adapter = adapter
-        UpcomingEventRec.itemAnimator = DefaultItemAnimator()
-        UpcomingEventRec.addItemDecoration(DividerItemDecoration(requireActivity(),DividerItemDecoration.VERTICAL))
-        UpcomingEventRec.layoutManager = LinearLayoutManager(requireContext())
+        mView.UpcomingEventRec.adapter = adapter
+        mView.UpcomingEventRec.itemAnimator = DefaultItemAnimator()
+        mView.UpcomingEventRec.addItemDecoration(DividerItemDecoration(requireActivity(),DividerItemDecoration.VERTICAL))
+        mView.UpcomingEventRec.layoutManager = LinearLayoutManager(requireContext())
     }
 }

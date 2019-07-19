@@ -19,7 +19,7 @@
                 android:id="@+id/Toolbar"
                 android:background="@color/colorPrimaryDark"
                 app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light"
-        />
+                app:titleTextColor="@color/white"/>
 
         <fragment
                 android:id="@+id/HostFragment"

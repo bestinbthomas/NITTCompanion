@@ -15,18 +15,20 @@ import com.example.nittcompanion.R
 import com.example.nittcompanion.common.BaseViewModel
 import com.example.nittcompanion.common.ListenTo
 import com.example.nittcompanion.common.factoryAndInjector.InjectorUtils
-import kotlinx.android.synthetic.main.fragment_calender.*
-import kotlinx.android.synthetic.main.fragment_courses.*
+import kotlinx.android.synthetic.main.fragment_courses.view.*
 
 class CoursesFragment : Fragment() {
     private lateinit var viewModel: BaseViewModel
     private lateinit var adapter : CourcesRecyclerAdapter
+    private lateinit var mView : View
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_courses,container,false)
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        mView = view
+        retainInstance = true
         activity?.let {
             viewModel = ViewModelProviders.of(it, InjectorUtils(it.application).provideBaseViewModelFactory()).get(
             BaseViewModel::class.java)
@@ -36,19 +38,19 @@ class CoursesFragment : Fragment() {
         setOnClicks( )
     }
 
-    private fun setOnClicks() {
-        AddEventFAB.setOnClickListener {
+    private fun setOnClicks() =activity?.let {
+        mView.addCourseFAB.setOnClickListener {
             viewModel.listen(ListenTo.AddNewCourse)
             findNavController().navigate(R.id.action_destination_courses_to_destination_add_courses)
         }
     }
 
-    private fun setUpRecycler() {
+    private fun setUpRecycler() =activity?.let {
         adapter = CourcesRecyclerAdapter(requireContext(), listOf())
-        CoursesRecycler.adapter = adapter
-        CoursesRecycler.itemAnimator = DefaultItemAnimator()
-        CoursesRecycler.addItemDecoration(DividerItemDecoration(requireActivity(),DividerItemDecoration.VERTICAL))
-        CoursesRecycler.layoutManager = LinearLayoutManager(requireActivity())
+        mView.CoursesRecycler.adapter = adapter
+        mView.CoursesRecycler.itemAnimator = DefaultItemAnimator()
+        mView.CoursesRecycler.addItemDecoration(DividerItemDecoration(requireActivity(),DividerItemDecoration.VERTICAL))
+        mView.CoursesRecycler.layoutManager = LinearLayoutManager(requireActivity())
         adapter.eventSelectListen.observe(
             this,
             Observer {
