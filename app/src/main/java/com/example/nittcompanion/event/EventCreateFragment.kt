@@ -53,12 +53,6 @@ class EventCreateFragment : Fragment() {
 
     }
 
-    override fun onStart() {
-        super.onStart()
-
-
-    }
-
     private fun setClickListeners() = activity?.let {
         mView.SaveEvent.setOnClickListener {
             saveEvent()
@@ -134,7 +128,7 @@ class EventCreateFragment : Fragment() {
                     endDate.timeInMillis,
                     mView.typeSpinner.selectedItem.toString(),
                     try {
-                        courses[mView.CourseSpinner.selectedItemPosition].ID
+                        courses[mView.CourseSpinner.selectedItemPosition - 1].ID
                     } catch (e : Exception){
                         ""
                     },
@@ -152,6 +146,7 @@ class EventCreateFragment : Fragment() {
         startDate.timeInMillis = event.startDate
         endDate.timeInMillis = event.endDate
         val coursenames = mutableListOf<String>()
+        coursenames.add("None")
         courses.forEach {
             coursenames.add(it.name)
         }
@@ -160,19 +155,19 @@ class EventCreateFragment : Fragment() {
         mView.CourseSpinner.adapter =
             ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, coursenames)
         if(event.courceid.isNotBlank()) {
-            mView.CourseSpinner.setSelection(courses.indexOf(courses.filter {
+            mView.CourseSpinner.setSelection(courses.indexOf(courses.find {
                 it.ID == event.courceid
-            }[0]))
+            })+1)
         }
         if(event.type.isNotBlank()) {
             mView.typeSpinner.setSelection(
                 when (event.type) {
-                    TYPE_CLASS -> 0
-                    TYPE_CT -> 1
-                    TYPE_ENDSEM -> 2
+                    TYPE_OTHER -> 0
+                    TYPE_CLASS -> 1
+                    TYPE_LAB -> 2
                     TYPE_ASSIGNMENT -> 3
-                    TYPE_LAB -> 4
-                    TYPE_OTHER -> 5
+                    TYPE_CT -> 4
+                    TYPE_ENDSEM -> 5
                     else -> -1
                 }
             )

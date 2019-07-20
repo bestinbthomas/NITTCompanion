@@ -98,21 +98,25 @@ class CourseDetailFragment : Fragment() {
         mView.attendedPlus.setOnClickListener {
             course.attended++
             course.calculateClasses()
+            setViews()
             viewModel.listen(ListenTo.UpdateCourse(course,false))
         }
         mView.attendedMinus.setOnClickListener {
             course.attended--
             course.calculateClasses()
+            setViews()
             viewModel.listen(ListenTo.UpdateCourse(course,false))
         }
         mView.bunkedPlus.setOnClickListener {
             course.notAttended++
             course.calculateClasses()
+            setViews()
             viewModel.listen(ListenTo.UpdateCourse(course,false))
         }
-        mView.bunkedPlus.setOnClickListener {
+        mView.bunkedMinus.setOnClickListener {
             course.notAttended--
             course.calculateClasses()
+            setViews()
             viewModel.listen(ListenTo.UpdateCourse(course,false))
         }
     }
@@ -120,9 +124,9 @@ class CourseDetailFragment : Fragment() {
     private fun setViews() =activity?.let {
         mView.CourseName.text = course.name
         mView.Credits.text = requireActivity().resources.getString(R.string.credits_disp,course.credit)
-        mView.EventAttendance.text = requireActivity().resources.getString(R.string.attendenceWithPercent,course.attendance)
-        val classtoattend :Int = course.classToAttend.value!!
-        mView.AttendenceStatus.text = if(classtoattend<0) requireActivity().resources.getString(R.string.courseStatusBunk,(classtoattend*-1)) else requireActivity().resources.getString(R.string.courseStatusAttend,classtoattend)
+        mView.EventAttendance.text = requireActivity().resources.getString(R.string.attendenceWithPercent,course.attendance.toInt())
+        val classtoattend :Int = course.classToAttend
+        mView.AttendenceStatus.text = if(classtoattend<=0) requireActivity().resources.getString(R.string.courseStatusBunk,(classtoattend*-1)) else requireActivity().resources.getString(R.string.courseStatusAttend,classtoattend)
         mView.Attended.text = requireActivity().resources.getString(R.string.attended,course.attended)
         mView.Bunked.text = requireActivity().resources.getString(R.string.bunked,course.notAttended)
     }

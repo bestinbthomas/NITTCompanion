@@ -8,7 +8,9 @@ import com.example.nittcompanion.common.objects.Event
 import java.util.*
 
 interface IRepo {
-    suspend fun getEventsIn(field:Int = Calendar.MONTH, date: Calendar) : Result<Exception,List<Event>>
+    suspend fun getEventByID(iD :String) : Result<Exception,Event>
+
+    suspend fun getEventsIn(field:Int, date: Calendar) : Result<Exception,List<Event>>
 
     suspend fun getAlertEvents(courseid:String) : Result<Exception,List<Event>>
 
@@ -31,5 +33,7 @@ interface IRepo {
     suspend fun removeAlert(alert: Alert) : Result<Exception,Unit>
 
     suspend fun initialise()
+
+    suspend fun getCourseById(id : String): Result<Exception,Course>
 
 }

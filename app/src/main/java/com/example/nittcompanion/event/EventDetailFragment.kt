@@ -74,7 +74,7 @@ class EventDetailFragment : Fragment() {
             viewModel.DispEvent.observe(
                 act,
                 Observer { dispEvent ->
-                    event = dispEvent
+                    event = dispEvent?:Event()
                     setViews()
                 }
             )

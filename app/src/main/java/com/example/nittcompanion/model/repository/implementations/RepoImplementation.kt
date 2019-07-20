@@ -15,7 +15,10 @@ import java.util.*
 
 
 class RepoImplementation private constructor() : IRepo {
+
     override suspend fun initialise() {
+        courses.value = listOf()
+        alerts.value = listOf()
         loadCourses()
         loadAlerts()
         listenCourses()
@@ -96,20 +99,49 @@ class RepoImplementation private constructor() : IRepo {
         when (field) {
             Calendar.DAY_OF_MONTH -> getEventsOnDate(date)
             Calendar.MONTH -> getEventsInMonth(date)
-            else -> Result.Error(IllegalArgumentException())
+            else -> Result.build { throw IllegalArgumentException("Illegal argument passed to get events in") }
         }
+
+    override suspend fun getEventByID(iD: String): Result<Exception, Event>  = try{
+        val eventDocSnapshot = awaitTaskResult(eventsReference.document(iD).get())
+        var event = Event()
+        if(eventDocSnapshot.exists()) {
+            event = eventDocSnapshot.toObject(Event::class.java)!!
+            event.ID = eventDocSnapshot.id
+        }
+        Result.build { event }
+    } catch (e : Exception){
+        Result.build { throw e }
+    }
+
+    override suspend fun getCourseById(id : String): Result<Exception, Course> = try {
+        val courseDocSnap = awaitTaskResult(courseReference.document(id).get())
+        var course = Course()
+        if(courseDocSnap.exists()){
+            course = courseDocSnap.toObject(Course::class.java)!!
+            course.ID = courseDocSnap.id
+        }
+        Result.build { course }
+    } catch (e : Exception){
+        Result.build { throw e }
+    }
 
 
     override suspend fun getAlertEvents(courseid: String): Result<Exception, List<Event>> =
         try {
-            val task = awaitTaskResult(
-                eventsReference.whereEqualTo("courceid", courseid)
-                    .whereEqualTo("type", TYPE_ASSIGNMENT)
-                    .whereEqualTo("type", TYPE_CT)
-                    .whereEqualTo("type", TYPE_ENDSEM)
-                    .get()
+            val task1 = awaitTaskResult(eventsReference.whereEqualTo("courceid", courseid)
+                .whereEqualTo("type", TYPE_ASSIGNMENT)
+                .get()
             )
-            resultToEventsList(task)
+            val task2 = awaitTaskResult(eventsReference.whereEqualTo("courceid", courseid)
+                .whereEqualTo("type", TYPE_CT)
+                .get()
+            )
+            val task3 = awaitTaskResult(eventsReference.whereEqualTo("courceid", courseid)
+                .whereEqualTo("type", TYPE_ENDSEM)
+                .get()
+            )
+            resultToEventsList(task1,task2,task3)
         } catch (e: Exception) {
             Result.build { throw e }
         }
@@ -117,7 +149,7 @@ class RepoImplementation private constructor() : IRepo {
     override suspend fun getUpcommingEvents(noOfEvents: Int): Result<Exception, List<Event>> =
         try {
             val task = awaitTaskResult(
-                eventsReference.whereGreaterThanOrEqualTo("startDate", Calendar.getInstance())
+                eventsReference.whereGreaterThanOrEqualTo("startDate", Calendar.getInstance().timeInMillis)
                     .limit(noOfEvents.toLong())
                     .get()
             )
@@ -160,6 +192,12 @@ class RepoImplementation private constructor() : IRepo {
     override suspend fun removeEvent(event: Event): Result<Exception, Unit> =
         try {
             val deleteEventRerf = eventsReference.document(event.ID)
+            val alert = alerts.value!!.find {
+                it.eventId == event.ID
+            }
+            if(alert  != null){
+                removeAlert(alert)
+            }
             awaitTaskCompletable(
                 deleteEventRerf.delete()
             )
@@ -227,17 +265,22 @@ class RepoImplementation private constructor() : IRepo {
         return Result.build { courseList }
     }
 
-    private fun resultToEventsList(result: QuerySnapshot?): Result<Exception, List<Event>> {
+    private fun resultToEventsList(vararg result: QuerySnapshot?): Result<Exception, List<Event>> {
         val eventsList = mutableListOf<Event>()
 
-        result?.forEach { documentSnapshot ->
-            val event = documentSnapshot.toObject(Event::class.java)
-            event.ID = documentSnapshot.id
-            eventsList.add(event)
+        result.forEach { qs ->
+            qs?.forEach { documentSnapshot ->
+                val event = documentSnapshot.toObject(Event::class.java)
+                event.ID = documentSnapshot.id
+                eventsList.add(event)
+            }
+
         }
 
         return Result.build {
-            eventsList
+            eventsList.sortedBy {
+                it.startDate
+            }
         }
     }
 

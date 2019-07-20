@@ -59,6 +59,7 @@
     <string name="more_events">More Events . . .</string>
     <string name="see_courses">See Courses</string>
     <string name="add_common_notes">Add Common Notes</string>
+    <string name="see_events">See Events</string>
 
     <string-array name="Months">
         <item>January</item>
@@ -75,12 +76,12 @@
         <item>December</item>
     </string-array>
     <string-array name="Event_types">
+        <item>OtherEvent</item>
         <item>Class</item>
+        <item>LAB</item>
+        <item>Assignment</item>
         <item>ClassTest</item>
         <item>EndSem</item>
-        <item>Assignment</item>
-        <item>LAB</item>
-        <item>OtherEvent</item>
     </string-array>
 
     <string-array name="slots">

@@ -4,7 +4,7 @@ import com.example.nittcompanion.common.TYPE_CLASS
 import com.example.nittcompanion.common.TYPE_LAB
 import java.util.*
 
-open class ClassEvent(var classes: HashMap<String, Int> = hashMapOf(),var islab : Boolean) {
+open class ClassEvent(var classes: HashMap<String, Int> = hashMapOf(),var islab : Boolean = false) {
 
 
     private fun getStartTime(time: Calendar): Long {

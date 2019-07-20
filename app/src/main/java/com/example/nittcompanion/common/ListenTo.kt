@@ -25,4 +25,6 @@ sealed class ListenTo {
     data class AddAlert(val alert : Alert) : ListenTo()
     data class UpdateCourse(val course: Course,val syncInFireStore: Boolean) : ListenTo()
     data class UpdateEvent(val event: Event) : ListenTo()
+    data class NotificationTappedEvent(val eventID : String) : ListenTo()
+    data class NotificationTappedCourse(val courseID : String) : ListenTo()
 }

@@ -68,6 +68,14 @@ class HomeFragment : Fragment() {
                 it,
                 Observer { event ->
                     adapter.updateEvents(event)
+                    activity?.let {
+                        if (event.isNotEmpty()){
+                            mView.MoreEvents.text = resources.getString(R.string.more_events)
+                        }else{
+                            mView.MoreEvents.text = resources.getString(R.string.see_events)
+                        }
+                    }
+
                 }
             )
         }

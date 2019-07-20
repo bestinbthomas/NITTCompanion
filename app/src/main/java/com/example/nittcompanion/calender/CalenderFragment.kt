@@ -109,6 +109,7 @@ class CalenderFragment : Fragment() {
             viewModel.SelectableEvents.observe(
                 it,
                 Observer { events ->
+                    Log.d("CalenderFragment","events changed")
                     RecAdapter.updateEvents(events)
                 }
             )
@@ -129,6 +130,7 @@ class CalenderFragment : Fragment() {
         RecAdapter.eventClickListener.observe(
             this,
             Observer {
+                findNavController().navigate(R.id.action_destination_calender_to_destination_event_detail)
                 viewModel.listen(it)
             }
         )

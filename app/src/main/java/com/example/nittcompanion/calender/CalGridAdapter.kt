@@ -31,7 +31,7 @@ class CalGridAdapter(
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        val view : View = convertView?:LayoutInflater.from(context).inflate(R.layout.calender_item,parent,false)
+        val view : View = LayoutInflater.from(context).inflate(R.layout.calender_item,parent,false)
         val calitemroot = view.findViewById<ConstraintLayout>(R.id.calItemConstraint)
         val calback = view.findViewById<ImageView>(R.id.currBack)
         val dispdate = view.findViewById<TextView>(R.id.calDate)
@@ -64,8 +64,8 @@ class CalGridAdapter(
             }
 
             alerts.forEach {
-                date = Calendar.getInstance().getCalEnderWithMillis(it.timeinmillis)
-                if (date[Calendar.DATE] == disp && disp <= Calendar.getInstance()[Calendar.DATE])
+                val tempdate = Calendar.getInstance().getCalEnderWithMillis(it.timeinmillis)
+                if (tempdate[Calendar.DATE] == disp && disp <= Calendar.getInstance()[Calendar.DATE] && tempdate[Calendar.MONTH] == date[Calendar.MONTH] && tempdate[Calendar.YEAR] == date[Calendar.YEAR])
                     cautiondot.visibility = View.VISIBLE
             }
         }
@@ -88,15 +88,17 @@ class CalGridAdapter(
 
     fun updateDate(date : Calendar){
         this.date = date
-
+        notifyDataSetChanged()
     }
 
     fun updateEvents(events: List<Event>){
         this.events = events
+        notifyDataSetChanged()
     }
 
     fun updateAlerts(alerts: List<Alert>){
         this.alerts = alerts
+        notifyDataSetChanged()
     }
 
 

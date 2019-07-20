@@ -16,7 +16,9 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
+            android:name=".common.NITTCompanion"
             tools:ignore="GoogleAppIndexingWarning">
+        <receiver android:name=".notification.NotificationBroadCastReceiver"/>
         <activity android:name=".common.SplashActivity"
                   android:noHistory="true">
             <intent-filter>

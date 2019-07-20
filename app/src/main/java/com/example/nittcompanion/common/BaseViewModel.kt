@@ -44,6 +44,8 @@ class BaseViewModel(protected val uicontext: CoroutineContext,private val repo:I
     val DispCourse: LiveData<Course> get() = SelCourse
 
     init {
+        privateMonthlyEvents.value = listOf()
+        privateSelectableEvents.value = listOf()
         SelEvent.value = Event()
         SelCourse.value = Course()
         jobTracker = Job()
@@ -72,6 +74,8 @@ class BaseViewModel(protected val uicontext: CoroutineContext,private val repo:I
             is ListenTo.CourseDetailStart -> initCourseDetail()
             is ListenTo.HomeFragmentStart -> initHomeFragment()
             is ListenTo.ActivityStarted -> initialiseRepo()
+            is ListenTo.NotificationTappedEvent -> getEventWithId(listenTo.eventID)
+            is ListenTo.NotificationTappedCourse -> getCourseWithId(listenTo.courseID)
         }
     }
 
@@ -80,6 +84,7 @@ class BaseViewModel(protected val uicontext: CoroutineContext,private val repo:I
     }
 
     private fun initHomeFragment() = launch{
+        privateSelectableEvents.value = listOf()
         when(val res = repo.getUpcommingEvents(7)){
             is Result.Value -> privateSelectableEvents.value = res.value
             is Result.Error -> errorState.value = ERROR_EVENT_LOAD
@@ -87,6 +92,7 @@ class BaseViewModel(protected val uicontext: CoroutineContext,private val repo:I
     }
 
     private fun initCourseDetail() =launch{
+        privateSelectableEvents.value = listOf()
          when(val res = repo.getAlertEvents(DispCourse.value!!.ID)){
             is Result.Value -> privateSelectableEvents.value = res.value
             is Result.Error -> errorState.value = ERROR_EVENT_LOAD
@@ -97,7 +103,7 @@ class BaseViewModel(protected val uicontext: CoroutineContext,private val repo:I
         if (privateSelectableEvents.value!!.none {
                 it.ID == event.ID
             }) {
-            val events = privateSelectableEvents.value as MutableList
+            val events = SelectableEvents.value!!.filter { true } as MutableList
             events.add(event)
             privateSelectableEvents.value = events
             }
@@ -151,6 +157,26 @@ class BaseViewModel(protected val uicontext: CoroutineContext,private val repo:I
         evaluateResult("remove alert",repo.removeAlert(alert!!))
     }
 
+    private fun getEventWithId(id : String) = launch {
+        when(val res = repo.getEventByID(id)){
+            is Result.Value -> SelEvent.value = res.value
+            is Result.Error -> errorState.value = ERROR_EVENT_LOAD
+        }
+    }
+
+    private fun getCourseWithId(id : String) = launch {
+        Courses.value!!.find {
+            it.ID ==id
+        }?.let {
+            SelCourse.value = it
+            return@launch
+        }
+        when(val res = repo.getCourseById(id)){
+            is Result.Value -> SelCourse.value = res.value
+            is Result.Error -> errorState.value = ERROR_COURSE_LOAD
+        }
+    }
+
     private fun removeEvent() =launch{
         when(repo.removeEvent(SelEvent.value!!)){
             is Result.Value -> SelEvent.value=null
@@ -165,17 +191,19 @@ class BaseViewModel(protected val uicontext: CoroutineContext,private val repo:I
 
     private fun initScheduleFragment() {
         curDate.value = Calendar.getInstance()
+        privateSelectableEvents.value = listOf()
         getEventsInMonth()
+        getEventsOnDate()
     }
 
     private fun getEventsInMonth() = launch {
-        when(val repoResult = repo.getEventsIn(date = curDate.value!!)){
+        when(val repoResult = repo.getEventsIn(Calendar.MONTH,date = curDate.value!!)){
             is Result.Value -> privateMonthlyEvents.value = repoResult.value
             is Result.Error -> errorState.value = ERROR_EVENT_LOAD
         }
     }
     private fun getEventsOnDate() = launch {
-        when(val repoResult = repo.getEventsIn(date = curDate.value!!)){
+        when(val repoResult = repo.getEventsIn(Calendar.DAY_OF_MONTH,date = curDate.value!!)){
             is Result.Value -> privateSelectableEvents.value = repoResult.value
             is Result.Error -> errorState.value = ERROR_EVENT_LOAD
         }
@@ -201,7 +229,7 @@ class BaseViewModel(protected val uicontext: CoroutineContext,private val repo:I
     private fun selectEvent (pos: Int) {
         SelEvent.value = SelectableEvents.value!![pos]
         if (SelEvent.value!!.type in arrayOf(TYPE_CLASS, TYPE_LAB)) {
-            SelCourse.value = Courses.value!!.find { it.ID == DispEvent.value!!.courceid }
+            SelCourse.value = Courses.value?.find { it.ID == DispEvent.value!!.courceid } ?: Course()
         }
     }
 

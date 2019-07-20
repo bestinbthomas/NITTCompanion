@@ -1,15 +1,15 @@
 package com.example.nittcompanion.event
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.example.nittcompanion.R
-import com.example.nittcompanion.common.ListenTo
-import com.example.nittcompanion.common.getCalEnderWithMillis
-import com.example.nittcompanion.common.getTimeInFormat
+import com.example.nittcompanion.common.*
 import com.example.nittcompanion.common.objects.Event
 import kotlinx.android.synthetic.main.event_item.view.*
 import java.util.*
@@ -33,7 +33,18 @@ class EventsRecyclerAdapter(private var events: List<Event>, val eventClickListe
     override fun onBindViewHolder(holder: MyHolder, position: Int) {
         val millis = events[position].startDate
         holder.time.text = Calendar.getInstance().getCalEnderWithMillis(millis).getTimeInFormat()
+        holder.date.text = Calendar.getInstance().getCalEnderWithMillis(millis).getDateInFormat()
         holder.Evntname.text = events[position].name
+
+        if (events[position].type in arrayOf(TYPE_CT, TYPE_ENDSEM) ) {
+            holder.evetAlert.visibility = View.VISIBLE
+            holder.evetAlert.setColorFilter(Color.RED)
+        }
+        else if (events[position].type == TYPE_ASSIGNMENT){
+            holder.evetAlert.visibility = View.VISIBLE
+            holder.evetAlert.setColorFilter(Color.YELLOW)
+        }
+        else holder.evetAlert.visibility = View.GONE
 
         holder.itemView.setOnClickListener {
             eventClickListener.value = ListenTo.EventClicked(position)
@@ -47,5 +58,7 @@ class EventsRecyclerAdapter(private var events: List<Event>, val eventClickListe
     class MyHolder(view: View) : RecyclerView.ViewHolder(view){
         var time: TextView = view.EventTime
         var Evntname: TextView = view.EventName
+        var evetAlert : ImageView = view.eventAlert
+        var date : TextView = view.EventDate
     }
 }

@@ -23,8 +23,8 @@ class CourcesRecyclerAdapter(private val context: Context, var courses : List<Co
 
     override fun onBindViewHolder(holder: MyHolder, position: Int) {
         holder.name.text = courses[position].name
-        holder.attendance.text = context.resources.getString(R.string.attendenceWithPercent,courses[position].attendance)
-        val classtoattend = courses[position].classToAttend.value!!
+        holder.attendance.text = context.resources.getString(R.string.attendenceWithPercent,courses[position].attendance.toInt())
+        val classtoattend = courses[position].classToAttend
         holder.status.text = if(classtoattend<0) context.resources.getString(R.string.courseStatusBunk,(classtoattend*-1)) else context.resources.getString(R.string.courseStatusAttend,classtoattend)
         holder.root.setOnClickListener {
             eventSelectListen.value = ListenTo.CourseSelected(position)

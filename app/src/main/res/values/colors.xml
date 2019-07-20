@@ -2,17 +2,18 @@
 <resources>
     <color name="colorPrimary">@color/primaryColor</color>
     <color name="colorPrimaryDark">@color/primaryDarkColor</color>
+    <color name="colorSecondary">@color/secondaryColor</color>
+    <color name="colorSecondaryDark">@color/secondaryDarkColor</color>
     <color name="colorAccent">@color/secondaryColor</color>
 
-    <color name="primaryColor">#2962ff</color>
-    <color name="primaryLightColor">#768fff</color>
-    <color name="primaryDarkColor">#0039cb</color>
-    <color name="secondaryColor">#ffff00</color>
-    <color name="secondaryLightColor">#ffff5a</color>
-    <color name="secondaryDarkColor">#C7CC00</color>
+    <color name="primaryColor">#aa00ff</color>
+    <color name="primaryLightColor">#e254ff</color>
+    <color name="primaryDarkColor">#7200ca</color>
+    <color name="secondaryColor">#ffab40</color>
+    <color name="secondaryLightColor">#ffdd71</color>
+    <color name="secondaryDarkColor">#c77c02</color>
     <color name="primaryTextColor">#ffffff</color>
     <color name="secondaryTextColor">#000000</color>
-
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
 </resources>
