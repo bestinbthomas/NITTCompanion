@@ -23,10 +23,12 @@ class AlertsChecker(appContext: Context,workerParams : WorkerParameters) : Worke
         firestoreInctance.collection("user").document(user!!.uid).collection(FIREBASE_COLLECTION_COURSES)
     override fun doWork(): Result {
         try{
+            Log.d("AlertsChecker","running")
             val cal = Calendar.getInstance()
             cal[Calendar.HOUR_OF_DAY] = 0
             cal[Calendar.MINUTE] = 0
             cal[Calendar.SECOND] = 0
+            cal.add(Calendar.DAY_OF_MONTH,(cal[Calendar.DAY_OF_WEEK] - Calendar.SUNDAY)* -1)
             val timeflag = cal.timeInMillis
             courseReference.whereLessThan("lastEventCreated",timeflag)
                 .get()
@@ -39,24 +41,31 @@ class AlertsChecker(appContext: Context,workerParams : WorkerParameters) : Worke
                         courses.add(course)
                     }
 
-                    courses.forEach {
-                        it.getRegularClasseOnDay(Calendar.getInstance())?.let { event ->
-                            val data = Data.Builder()
-                            data.putString(KEY_EVENT_ID, event.ID)
-                            data.putString(KEY_EVENT_NAME, event.name)
-                            data.putString(KEY_COURSE_ID,event.courceid)
-                            data.putBoolean(KEY_IS_CLASS,true)
-                            val delay: Long =
-                                if (calculateDelay(event.startDate) > 0) calculateDelay(event.startDate) else 0
-                            val workRequest = OneTimeWorkRequestBuilder<NotifyAlert>()
-                                .setInputData(data.build())
-                                .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-                                .build()
-                            WorkManager.getInstance(applicationContext)
-                                .enqueue(workRequest)
-                            val alert = Alert(event.startDate,event.ID)
-                            alertReference.document(alert.eventId).set(alert)
-                            eventReference.document(event.ID).set(event)
+                    courses.forEach { course ->
+                        val sentDate = Calendar.getInstance()
+                        if(sentDate[Calendar.DAY_OF_WEEK]>=Calendar.FRIDAY)
+                            sentDate.add(Calendar.DAY_OF_MONTH,4)
+                        course.getRegularClasseForWeek(sentDate).let { events ->
+                            events.forEach { event ->
+                                val data = Data.Builder()
+                                data.putString(KEY_EVENT_ID, event.ID)
+                                data.putString(KEY_EVENT_NAME, event.name)
+                                data.putString(KEY_COURSE_ID,event.courceid)
+                                data.putBoolean(KEY_IS_CLASS,true)
+                                val delay: Long =
+                                    if (calculateDelay(event.startDate) > 0) calculateDelay(event.startDate) else 0
+                                val workRequest = OneTimeWorkRequestBuilder<NotifyAlert>()
+                                    .setInputData(data.build())
+                                    .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                                    .build()
+                                WorkManager.getInstance(applicationContext)
+                                    .enqueue(workRequest)
+                                val alert = Alert(event.startDate,event.ID)
+                                courseReference.document(course.ID).update("lastEventCreated",sentDate.timeInMillis)
+                                alertReference.document(alert.eventId).set(alert)
+                                eventReference.document(event.ID).set(event)
+                            }
+
                         }
                     }
                 }
@@ -70,7 +79,4 @@ class AlertsChecker(appContext: Context,workerParams : WorkerParameters) : Worke
         }
         return Result.success()
     }
-
-    private fun calculateDelay(startDate: Long): Long = startDate - Calendar.getInstance().timeInMillis + (50*60*1000)
-
 }

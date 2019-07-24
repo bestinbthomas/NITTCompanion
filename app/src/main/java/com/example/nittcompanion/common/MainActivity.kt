@@ -1,8 +1,6 @@
 package com.example.nittcompanion.common
 
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.PorterDuff
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -18,15 +16,18 @@ import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
+import androidx.work.*
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.nittcompanion.R
+import com.example.nittcompanion.background.AlertsChecker
 import com.example.nittcompanion.common.factoryAndInjector.InjectorUtils
 import com.example.nittcompanion.login.LoginActivity
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.nav_head.view.*
+import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -113,6 +114,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             findNavController(R.id.HostFragment).navigate(R.id.destination_event_detail)
         }
+        val constrain = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+        val updateCourseRequest = PeriodicWorkRequestBuilder<AlertsChecker>(6,TimeUnit.DAYS,1,TimeUnit.DAYS)
+            .setConstraints(constrain)
+            .setBackoffCriteria(BackoffPolicy.LINEAR,1,TimeUnit.HOURS)
+            .build()
+
+        val workManager = WorkManager.getInstance(applicationContext)
+        workManager.enqueueUniquePeriodicWork(ALERTS_WORK_TAG,ExistingPeriodicWorkPolicy.KEEP,updateCourseRequest)
     }
 
     private fun setObservations() {
@@ -125,22 +136,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.nav_toolbar, menu)
+       /* menuInflater.inflate(R.menu.nav_toolbar, menu)
         val drawable = menu?.getItem(0)?.icon
         drawable?.let {
             it.mutate()
             it.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP)
-        }
+        }*/
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         //val navigated = NavigationUI.onNavDestinationSelected(item!!,navigationController)
         super.onOptionsItemSelected(item)
-        if (item?.itemId == R.id.destination_alarm) {
+        /*if (item?.itemId == R.id.destination_alarm) {
             navigationController.navigate(R.id.destination_alarm)
             return true
-        }
+        }*/
         return false
     }
 

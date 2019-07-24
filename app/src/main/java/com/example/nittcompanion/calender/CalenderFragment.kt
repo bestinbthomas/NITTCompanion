@@ -15,11 +15,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.nittcompanion.R
 import com.example.nittcompanion.common.BaseViewModel
 import com.example.nittcompanion.common.ListenTo
-import com.example.nittcompanion.common.createSnackbar
 import com.example.nittcompanion.common.factoryAndInjector.InjectorUtils
 import com.example.nittcompanion.common.objects.Event
 import com.example.nittcompanion.event.EventsRecyclerAdapter
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_calender.view.*
 import java.util.*
 
@@ -80,12 +78,6 @@ class CalenderFragment : Fragment() {
     private fun setObservations() = activity?.let {
 
         activity?.let {
-            viewModel.error.observe(
-                it,
-                Observer { msg ->
-                    createSnackbar(msg, Snackbar.LENGTH_SHORT)
-                }
-            )
             viewModel.DispDate.observe(it,
                 Observer { cal ->
                     GridAdapter.updateDate(cal)
@@ -118,6 +110,7 @@ class CalenderFragment : Fragment() {
                 Observer { alerts ->
                     GridAdapter.updateAlerts(alerts)
                     GridAdapter.notifyDataSetChanged()
+                    RecAdapter.updateAlerts(alerts)
                 }
             )
         }

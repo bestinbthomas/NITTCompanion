@@ -1,24 +1,29 @@
 package com.example.nittcompanion.model.repository.implementations
 
+import android.app.Application
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.work.Data
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.example.nittcompanion.common.*
 import com.example.nittcompanion.common.objects.Alert
 import com.example.nittcompanion.common.objects.Course
 import com.example.nittcompanion.common.objects.Event
 import com.example.nittcompanion.model.repository.IRepo
+import com.example.nittcompanion.notification.NotifyAlert
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 
-class RepoImplementation private constructor() : IRepo {
+class RepoImplementation private constructor(val app :Application) : IRepo {
 
     override suspend fun initialise() {
-        courses.value = listOf()
-        alerts.value = listOf()
+
         loadCourses()
         loadAlerts()
         listenCourses()
@@ -29,8 +34,8 @@ class RepoImplementation private constructor() : IRepo {
         @Volatile
         private var instance: IRepo? = null
 
-        fun getInstance(): IRepo = instance ?: synchronized(this) {
-            instance ?: RepoImplementation().also { instance = it }
+        fun getInstance(app : Application): IRepo = instance ?: synchronized(this) {
+            instance ?: RepoImplementation(app).also { instance = it }
         }
     }
 
@@ -45,16 +50,21 @@ class RepoImplementation private constructor() : IRepo {
     private val alerts = MutableLiveData<List<Alert>>()
     private val courses = MutableLiveData<List<Course>>()
 
-    private suspend fun loadCourses() {
-        try {
-            val result = awaitTaskResult(courseReference.get())
-            when (val res = resultToCoursesList(result)) {
-                is Result.Value -> courses.value = res.value
-                is Result.Error -> logEror("loading courses", res.error)
-            }
-        } catch (e: Exception) {
-            logEror("loading courses", e)
+    private suspend fun loadCourses() = try {
+        Log.d("Load cources","started loading courses")
+        val result = awaitTaskResult(courseReference.get())
+        when (val res = resultToCoursesList(result)) {
+            is Result.Value -> courses.value = res.value
+            is Result.Error -> logEror("loading courses", res.error)
         }
+        courses.value?.forEach {
+            if(it.lastEventCreated <= Calendar.getInstance().timeInMillis){
+                addEventsForWeek(it)
+            }
+        }
+        Log.d("Load cources","finished loading courses")
+    } catch (e: Exception) {
+        logEror("loading courses", e)
     }
 
     private suspend fun loadAlerts() {
@@ -162,6 +172,8 @@ class RepoImplementation private constructor() : IRepo {
 
     override suspend fun updateCourse(course: Course, SyncInFirebase: Boolean): Result<Exception, Unit> =
         try{
+            if (course.lastEventCreated == 0.toLong())
+                addEventsForWeek(course)
             val updateCourseRef = courseReference.document(course.ID)
             awaitTaskCompletable(updateCourseRef.set(course))
             Result.build { Unit }
@@ -243,11 +255,30 @@ class RepoImplementation private constructor() : IRepo {
 
     private suspend fun getEventsOnDate(date: Calendar): Result<Exception, List<Event>> =
         try {
+            val events = mutableListOf<Event>()
+            val cal = Calendar.getInstance()
+            cal[Calendar.HOUR_OF_DAY] = 0
+            cal[Calendar.MINUTE] = 0
+            cal[Calendar.SECOND] = 1
+            cal.add(Calendar.DAY_OF_MONTH,(cal[Calendar.DAY_OF_WEEK] - Calendar.SUNDAY)* -1)
+            val timeflag = cal.timeInMillis
+            courses.value?.filter{
+                it.lastEventCreated < timeflag
+            }?.forEach {
+                it.getRegularClasseOnDay(date)?.let { event ->
+                    events.add(event)
+                }
+
+            }
             val task = awaitTaskResult(
                 eventsReference.whereEqualTo("date", date.getDateInFormat())
                     .get()
             )
-            resultToEventsList(task)
+            when(val res = resultToEventsList(task)){
+                is Result.Value -> events.addAll(res.value)
+                is Result.Error -> Log.wtf("loading event failed",res.error)
+            }
+            Result.build { events.sortedBy { it.startDate } }
         } catch (e: Exception) {
             Result.build { throw e }
         }
@@ -300,6 +331,34 @@ class RepoImplementation private constructor() : IRepo {
 
     private fun logEror(message: String, e: Exception) {
         Log.e("Repository", message, e)
+    }
+
+    private suspend fun addEventsForWeek(course : Course){
+        val sentDate = Calendar.getInstance()
+        if(sentDate[Calendar.DAY_OF_WEEK]>=Calendar.FRIDAY)
+            sentDate.add(Calendar.DAY_OF_MONTH,4)
+        course.getRegularClasseForWeek(sentDate).let { events ->
+            events.forEach { event ->
+                Log.d("add eventsFor Week","eventname : ${event.name} event id ${event.ID} course id ${event.courceid}")
+                val data = Data.Builder()
+                data.putString(KEY_EVENT_ID, event.ID)
+                data.putString(KEY_EVENT_NAME, event.name)
+                data.putString(KEY_COURSE_ID,event.courceid)
+                data.putBoolean(KEY_IS_CLASS,true)
+                val delay: Long = calculateDelay(event.startDate)
+                val workRequest = OneTimeWorkRequestBuilder<NotifyAlert>()
+                    .setInputData(data.build())
+                    .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                    .build()
+                WorkManager.getInstance(app.applicationContext)
+                    .enqueue(workRequest)
+                val alert = Alert(event.startDate,event.ID)
+                awaitTaskCompletable(courseReference.document(course.ID).update("lastEventCreated",sentDate.timeInMillis))
+                awaitTaskCompletable(alertReference.document(alert.eventId).set(alert))
+                awaitTaskCompletable(eventsReference.document(event.ID).set(event))
+            }
+
+        }
     }
 
 }

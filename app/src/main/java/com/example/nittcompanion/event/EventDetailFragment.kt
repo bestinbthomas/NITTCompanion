@@ -54,7 +54,7 @@ class EventDetailFragment : Fragment() {
         mView.EventEndTime.text = Calendar.getInstance().getCalEnderWithMillis(event.endDate).getTimeInFormat()
         if (event.type == TYPE_CLASS) {
             mView.attendanceTxt.visibility = View.VISIBLE
-            mView.EventAttendance.text = requireActivity().resources.getString(R.string.attendenceWithPercent,course.attendance)
+            mView.EventAttendance.text = requireActivity().resources.getString(R.string.attendenceWithPercent,course.attendance.toInt())
             mView.EventAttendance.visibility = View.VISIBLE
             if (alert) {
                 mView.DidYouAttendCard.visibility = View.VISIBLE
@@ -108,7 +108,7 @@ class EventDetailFragment : Fragment() {
             viewModel.listen(ListenTo.ClassAttended)
 
         }
-        mView.EventAttendedPositive.setOnClickListener {
+        mView.EventAttendedNegative.setOnClickListener {
             mView.DidYouAttendCard.visibility = View.GONE
             viewModel.listen(ListenTo.ClassBunked)
         }

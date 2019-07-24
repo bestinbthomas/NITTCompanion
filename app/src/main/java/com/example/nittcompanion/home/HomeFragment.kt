@@ -23,7 +23,7 @@ import kotlinx.android.synthetic.main.fragment_home.view.*
 
 class HomeFragment : Fragment() {
     private lateinit var viewModel: BaseViewModel
-    private lateinit var adapter: EventsRecyclerAdapter
+    private var adapter: EventsRecyclerAdapter = EventsRecyclerAdapter(listOf())
     private var events = listOf<Event>()
     private lateinit var mView :View
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -34,6 +34,11 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         mView = view
         retainInstance = true
+
+    }
+
+    override fun onStart() {
+        super.onStart()
         activity?.let {
             viewModel = ViewModelProviders.of(
                 requireActivity(),
@@ -76,6 +81,12 @@ class HomeFragment : Fragment() {
                         }
                     }
 
+                }
+            )
+            viewModel.alerts.observe(
+                it,
+                Observer { alerts ->
+                    adapter.updateAlerts(alerts)
                 }
             )
         }

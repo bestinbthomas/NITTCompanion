@@ -8,7 +8,7 @@ data class Course(var name : String = "",
                   var credit : Int = 0,
                   var classEvent : ClassEvent = ClassEvent(islab = false),
                   @set:Exclude @get:Exclude var ID : String = Calendar.getInstance().timeInMillis.toString(),
-                  var lastEventCreated : Long = Calendar.getInstance().timeInMillis) {
+                  var lastEventCreated : Long = 0) {
 
 
     var notAttended : Int = 0
@@ -62,5 +62,21 @@ data class Course(var name : String = "",
         calculateClasses()
     }
     fun getRegularClasseOnDay(day : Calendar) = classEvent.getEventOnDay(day,name,ID)
+
+    fun getRegularClasseForWeek(day : Calendar) : List<Event> {
+        Log.d("Course","get regular classes for weak called")
+        classEvent.getEventOnDay(day,name,ID)
+        val cal : Calendar = day.clone() as Calendar
+        cal.add(Calendar.DAY_OF_MONTH,(day[Calendar.DAY_OF_WEEK] - Calendar.MONDAY)*-1)
+        val events = mutableListOf<Event>()
+        while (cal[Calendar.DAY_OF_WEEK] in Calendar.MONDAY..Calendar.FRIDAY){
+            Log.d("Course","iterating through getregular classes DOW ${cal[Calendar.DAY_OF_WEEK]} DOM ${cal[Calendar.DAY_OF_MONTH]} ")
+            getRegularClasseOnDay(cal)?.let {
+                events.add(it)
+            }
+            cal.add(Calendar.DAY_OF_MONTH,1)
+        }
+        return events
+    }
 
 }

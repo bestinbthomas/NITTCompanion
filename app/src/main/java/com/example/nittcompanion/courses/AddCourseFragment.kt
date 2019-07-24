@@ -36,6 +36,11 @@ class AddCourseFragment : Fragment() {
         mView = view
 
         retainInstance = true
+
+    }
+
+    override fun onStart() {
+        super.onStart()
         activity?.let {
             viewModel = ViewModelProviders.of(
                 requireActivity(),
@@ -85,6 +90,7 @@ class AddCourseFragment : Fragment() {
         if (!validateName() or !validateCredits())
             return
         else {
+
             val classEvent = ClassEvent(
                 hashMapOf(
                     Calendar.MONDAY.toString() to mView.MonSlotPicker.selectedItemPosition,

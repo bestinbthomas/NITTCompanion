@@ -150,8 +150,9 @@ open class ClassEvent(var classes: HashMap<String, Int> = hashMapOf(),var islab 
     }
 
     fun getEventOnDay(day: Calendar, courseName: String, courseId: String) =
-        if (classes[day[Calendar.DAY_OF_WEEK].toString()] != 0)
+        if (classes.containsKey(day[Calendar.DAY_OF_WEEK].toString()) && classes[day[Calendar.DAY_OF_WEEK].toString()] != 0)
             Event("$courseName ${if (islab)"Lab" else "Class"} ", if(islab)getLabStartTime(day)else getStartTime(day), if(islab) getLabEndTime(day) else getEndTime(day), if(islab) TYPE_LAB else TYPE_CLASS, courseId)
         else null
+
 }
 

@@ -40,7 +40,7 @@ const val KEY_EVENT_NAME = "eventName"
 const val KEY_IS_CLASS = "isThisClass"
 const val KEY_ACTION = "action"
 
-const val NOTIFY_WORK_TAG = "notify user"
+const val ALERTS_WORK_TAG = "check_alerts"
 
 const val NOTIFICATION_CHANNEL_EVENT_ID = "Event Reminder"
 const val NOTIFICATION_NOTIFICATION_EVENT_ID = 1357

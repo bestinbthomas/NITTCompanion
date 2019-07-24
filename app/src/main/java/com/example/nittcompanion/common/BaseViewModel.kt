@@ -150,10 +150,10 @@ class BaseViewModel(protected val uicontext: CoroutineContext,private val repo:I
 
     private fun classAttended() =launch{
         val courseID = SelEvent.value!!.courceid
-        val course = Courses.value!!.find { it.ID == courseID }
+        val course = Courses.value?.find { it.ID == courseID }
         course!!.classAttended()
         evaluateResult("update courses",repo.updateCourse(course,true))
-        val alert = alerts.value!!.find { it.eventId == DispEvent.value!!.ID }
+        val alert = alerts.value?.find { it.eventId == DispEvent.value!!.ID }
         evaluateResult("remove alert",repo.removeAlert(alert!!))
     }
 
@@ -228,8 +228,11 @@ class BaseViewModel(protected val uicontext: CoroutineContext,private val repo:I
 
     private fun selectEvent (pos: Int) {
         SelEvent.value = SelectableEvents.value!![pos]
+        Log.e("select event","called")
         if (SelEvent.value!!.type in arrayOf(TYPE_CLASS, TYPE_LAB)) {
             SelCourse.value = Courses.value?.find { it.ID == DispEvent.value!!.courceid } ?: Course()
+            Log.e("select event","found courses name ${DispCourse.value!!.name}")
+            Log.e("select event","event courseid ${DispEvent.value!!.courceid}")
         }
     }
 

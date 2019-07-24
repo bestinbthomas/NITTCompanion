@@ -129,6 +129,7 @@ class CourseDetailFragment : Fragment() {
         mView.AttendenceStatus.text = if(classtoattend<=0) requireActivity().resources.getString(R.string.courseStatusBunk,(classtoattend*-1)) else requireActivity().resources.getString(R.string.courseStatusAttend,classtoattend)
         mView.Attended.text = requireActivity().resources.getString(R.string.attended,course.attended)
         mView.Bunked.text = requireActivity().resources.getString(R.string.bunked,course.notAttended)
+        mView.AlertsCard.visibility = View.INVISIBLE
     }
 
     private fun setObservations() {
@@ -143,6 +144,8 @@ class CourseDetailFragment : Fragment() {
             viewModel.SelectableEvents.observe(
                 act,
                 Observer { events ->
+                    if(events.isNotEmpty())
+                        mView.AlertsCard.visibility = View.VISIBLE
                     adapter.updateEvents(events)
                     setViews()
                 }

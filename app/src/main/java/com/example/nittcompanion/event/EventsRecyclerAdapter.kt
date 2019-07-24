@@ -10,11 +10,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.example.nittcompanion.R
 import com.example.nittcompanion.common.*
+import com.example.nittcompanion.common.objects.Alert
 import com.example.nittcompanion.common.objects.Event
 import kotlinx.android.synthetic.main.event_item.view.*
 import java.util.*
 
-class EventsRecyclerAdapter(private var events: List<Event>, val eventClickListener: MutableLiveData<ListenTo> = MutableLiveData()) : RecyclerView.Adapter<EventsRecyclerAdapter.MyHolder>() {
+class EventsRecyclerAdapter(private var events: List<Event>,private var alerts : List<Alert> = listOf(), val eventClickListener: MutableLiveData<ListenTo> = MutableLiveData()) : RecyclerView.Adapter<EventsRecyclerAdapter.MyHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyHolder {
         val inflator = LayoutInflater.from(parent.context)
         return MyHolder(
@@ -36,15 +37,21 @@ class EventsRecyclerAdapter(private var events: List<Event>, val eventClickListe
         holder.date.text = Calendar.getInstance().getCalEnderWithMillis(millis).getDateInFormat()
         holder.Evntname.text = events[position].name
 
-        if (events[position].type in arrayOf(TYPE_CT, TYPE_ENDSEM) ) {
-            holder.evetAlert.visibility = View.VISIBLE
-            holder.evetAlert.setColorFilter(Color.RED)
+        when {
+            events[position].type in arrayOf(TYPE_CT, TYPE_ENDSEM) -> {
+                holder.evetAlert.visibility = View.VISIBLE
+                holder.evetAlert.setColorFilter(Color.RED)
+            }
+            events[position].type == TYPE_ASSIGNMENT -> {
+                holder.evetAlert.visibility = View.VISIBLE
+                holder.evetAlert.setColorFilter(Color.YELLOW)
+            }
+            alerts.find { it.eventId == events[position].ID } != null -> {
+                holder.evetAlert.visibility = View.VISIBLE
+                holder.evetAlert.setColorFilter(Color.YELLOW)
+            }
+            else -> holder.evetAlert.visibility = View.GONE
         }
-        else if (events[position].type == TYPE_ASSIGNMENT){
-            holder.evetAlert.visibility = View.VISIBLE
-            holder.evetAlert.setColorFilter(Color.YELLOW)
-        }
-        else holder.evetAlert.visibility = View.GONE
 
         holder.itemView.setOnClickListener {
             eventClickListener.value = ListenTo.EventClicked(position)
@@ -53,6 +60,11 @@ class EventsRecyclerAdapter(private var events: List<Event>, val eventClickListe
 
     fun updateEvents(events: List<Event>){
         this.events = events
+        notifyDataSetChanged()
+    }
+
+    fun updateAlerts(alerts: List<Alert>){
+        this.alerts = alerts
         notifyDataSetChanged()
     }
     class MyHolder(view: View) : RecyclerView.ViewHolder(view){

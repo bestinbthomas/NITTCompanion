@@ -6,6 +6,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Icon
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.work.Worker
 import androidx.work.WorkerParameters
@@ -28,12 +29,8 @@ class NotifyAlert(context: Context,params: WorkerParameters) : Worker(context,pa
 
         val icon :Icon = Icon.createWithResource(applicationContext,R.drawable.ic_app_launcher_foreground)
 
-        val builder = Notification.Builder(applicationContext,
-            if (isClass) NOTIFICATION_CHANNEL_CLASS_ID else NOTIFICATION_CHANNEL_EVENT_ID)
-            .setSmallIcon(icon)
-            .setContentTitle(eventName)
-            .setContentIntent(activityPIntent)
-            .setCategory(NotificationCompat.CATEGORY_REMINDER)
+        Log.d("add eventsFor Week","eventname : $eventName event id $eventID course id $courseID")
+
         if (isClass){
             val yesIntent = Intent(applicationContext, NotificationBroadCastReceiver::class.java)
             val noIntent = Intent(applicationContext, NotificationBroadCastReceiver::class.java)
@@ -50,19 +47,35 @@ class NotifyAlert(context: Context,params: WorkerParameters) : Worker(context,pa
             val broadcastYes = PendingIntent.getBroadcast(applicationContext, REQ_NOTI_YES_PRESSED, yesIntent, 0)
             val broadcastNo = PendingIntent.getBroadcast(applicationContext, REQ_NOTI_NO_PRESSED, noIntent, 0)
             val broadcastCancel = PendingIntent.getBroadcast(applicationContext, REQ_NOTI_CANCELL_PRESSED, cancellIntent, 0)
-            builder.setContentText("Did you attend the class")
+            val notification = Notification.Builder(applicationContext,NOTIFICATION_CHANNEL_CLASS_ID)
+                .setSmallIcon(icon)
+                .setContentTitle(eventName)
+                .setContentIntent(activityPIntent)
+                .setCategory(NotificationCompat.CATEGORY_REMINDER)
+                .setContentText("Did you attend $eventName")
                 .addAction(Notification.Action.Builder(icon,"YES",broadcastYes).build())
                 .addAction(Notification.Action.Builder(icon,"NO",broadcastNo).build())
                 .addAction(Notification.Action.Builder(icon,"CANCEL",broadcastCancel).build())
+                .build()
+
+            val notificationManager = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+            notificationManager.notify((Calendar.getInstance().timeInMillis%1000).toInt(),notification)
         }else{
-            builder.setContentText("You have an upcoming event")
+            val notification = Notification.Builder(applicationContext, NOTIFICATION_CHANNEL_EVENT_ID)
+                .setSmallIcon(icon)
+                .setContentTitle(eventName)
+                .setContentIntent(activityPIntent)
+                .setCategory(NotificationCompat.CATEGORY_REMINDER)
+                .setContentText("You have an upcoming event $eventName")
+                .build()
+
+            val notificationManager = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+            notificationManager.notify(NOTIFICATION_NOTIFICATION_EVENT_ID,notification)
         }
 
-        val notification = builder.build()
 
-        val notificationManager = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-        notificationManager.notify(if(isClass) (Calendar.getInstance().timeInMillis%1000).toInt() else NOTIFICATION_NOTIFICATION_EVENT_ID,notification)
 
         return Result.success()
     }
