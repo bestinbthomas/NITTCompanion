@@ -1,10 +1,8 @@
 package com.example.nittcompanion.common
 
-import android.util.Log
 import com.example.nittcompanion.model.User
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
-import java.util.*
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -41,14 +39,4 @@ fun getCurrentUser() = when (val fireUser = FirebaseAuth.getInstance().currentUs
             fireUser.photoUrl
         )
     }
-}
-
-
-fun calculateDelay (startDate: Long): Long {
-    val delay = if((startDate - Calendar.getInstance().timeInMillis) > 0 )
-        startDate - Calendar.getInstance().timeInMillis + (50*60*1000)
-    else
-        0
-    Log.d("calculate delay","calculate delay returned $delay ")
-    return delay
 }

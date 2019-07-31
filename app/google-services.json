@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "782126181899-nloqqqrta2ab7gk3ivvkd38u97pqo7kr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.nittcompanion",
+            "certificate_hash": "952e69425fde656ad0db05f104de115b58475e84"
+          }
+        },
+        {
           "client_id": "782126181899-2pkvg7vjigh58rjd2fjs8v6vtcblbsv8.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

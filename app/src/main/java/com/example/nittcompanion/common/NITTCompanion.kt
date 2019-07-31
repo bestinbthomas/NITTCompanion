@@ -21,7 +21,7 @@ class NITTCompanion : Application() {
             eventChannel.description = "Receive reminders to important events"
 
             val classChannel = NotificationChannel(
-                NOTIFICATION_CHANNEL_EVENT_ID,
+                NOTIFICATION_CHANNEL_CLASS_ID,
                 "Reminder for Attendance",
                 NotificationManager.IMPORTANCE_HIGH
             )

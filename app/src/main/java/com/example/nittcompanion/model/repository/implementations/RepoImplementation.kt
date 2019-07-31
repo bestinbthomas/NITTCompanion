@@ -1,14 +1,14 @@
 package com.example.nittcompanion.model.repository.implementations
 
+import android.app.AlarmManager
 import android.app.Application
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.work.Data
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
 import com.example.nittcompanion.common.*
-import com.example.nittcompanion.common.objects.Alert
 import com.example.nittcompanion.common.objects.Course
 import com.example.nittcompanion.common.objects.Event
 import com.example.nittcompanion.model.repository.IRepo
@@ -17,7 +17,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 
 class RepoImplementation private constructor(val app :Application) : IRepo {
@@ -25,9 +24,7 @@ class RepoImplementation private constructor(val app :Application) : IRepo {
     override suspend fun initialise() {
 
         loadCourses()
-        loadAlerts()
         listenCourses()
-        listenAlerts()
     }
 
     companion object {
@@ -40,14 +37,10 @@ class RepoImplementation private constructor(val app :Application) : IRepo {
     }
 
     private val user = FirebaseAuth.getInstance().currentUser
-    private val alertReference =
-        FirebaseFirestore.getInstance().collection("user").document(user!!.uid).collection(FIREBASE_COLLECTION_ALERTS)
-    private val eventsReference =
-        FirebaseFirestore.getInstance().collection("user").document(user!!.uid).collection(FIREBASE_COLLECTION_EVENTS)
-    private val courseReference =
-        FirebaseFirestore.getInstance().collection("user").document(user!!.uid).collection(FIREBASE_COLLECTION_COURSES)
+    private val fireStoreInstance = FirebaseFirestore.getInstance().collection("user").document(user!!.uid)
+    private val eventsReference = fireStoreInstance.collection(FIREBASE_COLLECTION_EVENTS)
+    private val courseReference = fireStoreInstance.collection(FIREBASE_COLLECTION_COURSES)
 
-    private val alerts = MutableLiveData<List<Alert>>()
     private val courses = MutableLiveData<List<Course>>()
 
     private suspend fun loadCourses() = try {
@@ -65,31 +58,6 @@ class RepoImplementation private constructor(val app :Application) : IRepo {
         Log.d("Load cources","finished loading courses")
     } catch (e: Exception) {
         logEror("loading courses", e)
-    }
-
-    private suspend fun loadAlerts() {
-        try {
-            val result = awaitTaskResult(alertReference.get())
-            when (val res = resultToAlertsList(result)) {
-                is Result.Value -> alerts.value = res.value
-                is Result.Error -> logEror("loading courses", res.error)
-            }
-        } catch (e: Exception) {
-            logEror("loading courses", e)
-        }
-    }
-
-    private fun listenAlerts() {
-        alertReference.addSnapshotListener { querrySnapshot, exception ->
-            if (exception != null) {
-                logEror("error listening alerts", exception)
-                return@addSnapshotListener
-            }
-            when (val res = resultToAlertsList(querrySnapshot)) {
-                is Result.Value -> alerts.value = res.value
-                is Result.Error -> logEror("", res.error)
-            }
-        }
     }
 
     private fun listenCourses() {
@@ -113,7 +81,9 @@ class RepoImplementation private constructor(val app :Application) : IRepo {
         }
 
     override suspend fun getEventByID(iD: String): Result<Exception, Event>  = try{
-        val eventDocSnapshot = awaitTaskResult(eventsReference.document(iD).get())
+        Log.e("REPO","id opassed is $iD")
+        val eventDoc = eventsReference.document(iD)
+        val eventDocSnapshot = awaitTaskResult(eventDoc.get())
         var event = Event()
         if(eventDocSnapshot.exists()) {
             event = eventDocSnapshot.toObject(Event::class.java)!!
@@ -170,14 +140,16 @@ class RepoImplementation private constructor(val app :Application) : IRepo {
 
     override fun getCources(): LiveData<List<Course>> = courses
 
-    override suspend fun updateCourse(course: Course, SyncInFirebase: Boolean): Result<Exception, Unit> =
+    override suspend fun updateCourse(course: Course): Result<Exception, Unit> =
         try{
-            if (course.lastEventCreated == 0.toLong())
-                addEventsForWeek(course)
             val updateCourseRef = courseReference.document(course.ID)
             awaitTaskCompletable(updateCourseRef.set(course))
+            if (course.lastEventCreated == 0.toLong())
+                addEventsForWeek(course)
+            Log.e("REPO","update course id ${course.ID}")
             Result.build { Unit }
         } catch (e : Exception){
+            Log.e("REPO","update course failed in repo")
             Result.build { throw e }
         }
 
@@ -204,12 +176,6 @@ class RepoImplementation private constructor(val app :Application) : IRepo {
     override suspend fun removeEvent(event: Event): Result<Exception, Unit> =
         try {
             val deleteEventRerf = eventsReference.document(event.ID)
-            val alert = alerts.value!!.find {
-                it.eventId == event.ID
-            }
-            if(alert  != null){
-                removeAlert(alert)
-            }
             awaitTaskCompletable(
                 deleteEventRerf.delete()
             )
@@ -218,29 +184,6 @@ class RepoImplementation private constructor(val app :Application) : IRepo {
             Result.build { throw e }
         }
 
-    override fun getAlerts(): LiveData<List<Alert>> = alerts
-
-    override suspend fun addAlert(alert: Alert): Result<Exception, Unit> =
-        try {
-            val addAlertRef = alertReference.document(alert.eventId)
-            awaitTaskCompletable(
-                addAlertRef.set(alert)
-            )
-            Result.build { Unit }
-        } catch (e: Exception) {
-            Result.build { throw e }
-        }
-
-    override suspend fun removeAlert(alert: Alert): Result<Exception, Unit> =
-        try {
-            val deleteAlertRerf = alertReference.document(alert.eventId)
-            awaitTaskCompletable(
-                deleteAlertRerf.delete()
-            )
-            Result.build { Unit }
-        } catch (e: Exception) {
-            Result.build { throw e }
-        }
 
     private suspend fun getEventsInMonth(month: Calendar): Result<Exception, List<Event>> =
         try {
@@ -315,19 +258,6 @@ class RepoImplementation private constructor(val app :Application) : IRepo {
         }
     }
 
-    private fun resultToAlertsList(result: QuerySnapshot?): Result<Exception, List<Alert>> {
-        val alertList = mutableListOf<Alert>()
-
-        result?.forEach { documentSnapshot ->
-            val alert = documentSnapshot.toObject(Alert::class.java)
-            alert.eventId = documentSnapshot.id
-            alertList.add(alert)
-        }
-
-        return Result.build {
-            alertList
-        }
-    }
 
     private fun logEror(message: String, e: Exception) {
         Log.e("Repository", message, e)
@@ -335,30 +265,33 @@ class RepoImplementation private constructor(val app :Application) : IRepo {
 
     private suspend fun addEventsForWeek(course : Course){
         val sentDate = Calendar.getInstance()
+        var lastEnd : Long = 0
         if(sentDate[Calendar.DAY_OF_WEEK]>=Calendar.FRIDAY)
             sentDate.add(Calendar.DAY_OF_MONTH,4)
         course.getRegularClasseForWeek(sentDate).let { events ->
             events.forEach { event ->
                 Log.d("add eventsFor Week","eventname : ${event.name} event id ${event.ID} course id ${event.courceid}")
-                val data = Data.Builder()
-                data.putString(KEY_EVENT_ID, event.ID)
-                data.putString(KEY_EVENT_NAME, event.name)
-                data.putString(KEY_COURSE_ID,event.courceid)
-                data.putBoolean(KEY_IS_CLASS,true)
-                val delay: Long = calculateDelay(event.startDate)
-                val workRequest = OneTimeWorkRequestBuilder<NotifyAlert>()
-                    .setInputData(data.build())
-                    .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-                    .build()
-                WorkManager.getInstance(app.applicationContext)
-                    .enqueue(workRequest)
-                val alert = Alert(event.startDate,event.ID)
-                awaitTaskCompletable(courseReference.document(course.ID).update("lastEventCreated",sentDate.timeInMillis))
-                awaitTaskCompletable(alertReference.document(alert.eventId).set(alert))
-                awaitTaskCompletable(eventsReference.document(event.ID).set(event))
-            }
+                val notifyIntent = Intent(app,NotifyAlert::class.java)
+                notifyIntent.putExtra(KEY_EVENT_ID, event.ID)
+                notifyIntent.putExtra(KEY_EVENT_NAME, event.name)
+                notifyIntent.putExtra(KEY_COURSE_ID,event.courceid)
+                notifyIntent.putExtra(KEY_IS_CLASS,event.type in arrayOf(TYPE_CLASS, TYPE_LAB))
+                if(PendingIntent.getBroadcast(app,event.ID.takeLast(5).toInt(),notifyIntent,
+                        PendingIntent.FLAG_NO_CREATE)==null) {
+                    val notifyPendingIntent = PendingIntent.getBroadcast(
+                        app.applicationContext, event.ID.takeLast(5).toInt(), notifyIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                    )
+                    val alarmManager =
+                        app.applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
+                    alarmManager.set(AlarmManager.RTC_WAKEUP, event.endDate, notifyPendingIntent)
+                }
+                awaitTaskCompletable(eventsReference.document(event.ID).set(event))
+                lastEnd = event.endDate
+            }
         }
+        awaitTaskCompletable(courseReference.document(course.ID).update("lastEventCreated",lastEnd))
     }
 
 }

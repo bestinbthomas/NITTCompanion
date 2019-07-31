@@ -64,11 +64,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         viewModel = ViewModelProviders.of(this, InjectorUtils(application).provideBaseViewModelFactory())
             .get(BaseViewModel::class.java)
 
-        val intent = intent
-        if(intent.hasExtra(KEY_EVENT_ID) and intent.hasExtra(KEY_IS_CLASS) and intent.hasExtra(KEY_IS_CLASS)) {
-            eventFromNotiId = intent.getStringExtra(KEY_EVENT_ID)
-            courseFromNotiId = intent.getStringExtra(KEY_COURSE_ID)
-            isClassFromNoti = intent.getBooleanExtra(KEY_IS_CLASS,false)
+        val mintent = intent
+        if(mintent.hasExtra(KEY_EVENT_ID) and mintent.hasExtra(KEY_IS_CLASS)) {
+            Log.e("MainActivity","getting from intent")
+            eventFromNotiId = mintent.getStringExtra(KEY_EVENT_ID)
+            courseFromNotiId = mintent.getStringExtra(KEY_COURSE_ID)
+            isClassFromNoti = mintent.getBooleanExtra(KEY_IS_CLASS,false)
+            Log.e("MAINActivity","id from notification $eventFromNotiId")
         } else eventFromNotiId = null
     }
 
@@ -105,6 +107,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 .show()
         }
         setObservations()
+        Log.e("MAINActivity","id from notification $eventFromNotiId")
         eventFromNotiId?.let {eventid ->
             viewModel.listen(ListenTo.NotificationTappedEvent(eventid))
             if(isClassFromNoti){

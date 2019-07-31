@@ -5,7 +5,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
-import com.example.nittcompanion.common.objects.Alert
 import com.example.nittcompanion.common.objects.Course
 import com.example.nittcompanion.common.objects.Event
 import com.example.nittcompanion.model.repository.IRepo
@@ -15,11 +14,7 @@ import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.coroutines.CoroutineContext
 
-class BaseViewModel(protected val uicontext: CoroutineContext,private val repo:IRepo ) : ViewModel() ,CoroutineScope{
-
-    val alerts: LiveData<List<Alert>> = Transformations.map(repo.getAlerts()){
-        it
-    }
+class BaseViewModel(private val uicontext: CoroutineContext, private val repo:IRepo ) : ViewModel() ,CoroutineScope{
 
     private val TAG = "BaseViewModel"
     private val jobTracker: Job
@@ -68,8 +63,7 @@ class BaseViewModel(protected val uicontext: CoroutineContext,private val repo:I
             is ListenTo.RemoveCourse -> removeCourse()
             is ListenTo.AddNewEvent -> addNewEvent()
             is ListenTo.AddNewCourse -> addNewCourse()
-            is ListenTo.AddAlert -> addAlert(listenTo.alert)
-            is ListenTo.UpdateCourse -> updateCourse(listenTo.course,listenTo.syncInFireStore)
+            is ListenTo.UpdateCourse -> updateCourse(listenTo.course)
             is ListenTo.UpdateEvent -> updateEvent(listenTo.event)
             is ListenTo.CourseDetailStart -> initCourseDetail()
             is ListenTo.HomeFragmentStart -> initHomeFragment()
@@ -87,7 +81,10 @@ class BaseViewModel(protected val uicontext: CoroutineContext,private val repo:I
         privateSelectableEvents.value = listOf()
         when(val res = repo.getUpcommingEvents(7)){
             is Result.Value -> privateSelectableEvents.value = res.value
-            is Result.Error -> errorState.value = ERROR_EVENT_LOAD
+            is Result.Error -> {
+                errorState.value = ERROR_EVENT_LOAD
+                Log.e("ViewModel","error loading events",res.error)
+            }
         }
     }
 
@@ -95,7 +92,10 @@ class BaseViewModel(protected val uicontext: CoroutineContext,private val repo:I
         privateSelectableEvents.value = listOf()
          when(val res = repo.getAlertEvents(DispCourse.value!!.ID)){
             is Result.Value -> privateSelectableEvents.value = res.value
-            is Result.Error -> errorState.value = ERROR_EVENT_LOAD
+            is Result.Error -> {
+                Log.e("ViewModel","error loading events",res.error)
+                errorState.value = ERROR_EVENT_LOAD
+            }
         }
     }
 
@@ -110,13 +110,8 @@ class BaseViewModel(protected val uicontext: CoroutineContext,private val repo:I
         launch { evaluateResult("update event",repo.updateEvent(event)) }
     }
 
-    private fun updateCourse(course: Course,syncInFirebase : Boolean) {
-        launch {  evaluateResult("update courses",repo.updateCourse(course,syncInFirebase))}
-    }
-
-    private fun addAlert(alert: Alert) {
-       launch { evaluateResult("update courses",repo.addAlert(alert)) }
-
+    private fun updateCourse(course: Course) {
+        launch {  evaluateResult("update courses",repo.updateCourse(course))}
     }
 
     private fun addNewCourse() {
@@ -128,44 +123,48 @@ class BaseViewModel(protected val uicontext: CoroutineContext,private val repo:I
     }
 
     private fun removeCourse() = launch{
-        when(repo.removeCourse(DispCourse.value!!)){
+        when(val res = repo.removeCourse(DispCourse.value!!)){
             is Result.Value -> SelCourse.value = Course()
-            is Result.Error -> errorState.value = ERROR_REMOVING_COURSE
+            is Result.Error -> {
+                Log.e("ViewModel","error loading events",res.error)
+                errorState.value = ERROR_REMOVING_COURSE
+            }
         }
     }
 
     private fun addEventForCourse() {
-        SelEvent.value = Event(name = SelCourse.value!!.name,type = TYPE_CLASS)
+        SelEvent.value = Event(name = SelCourse.value!!.name,courceid = SelCourse.value!!.ID,type = TYPE_CLASS,imp = true)
     }
 
     private fun classBunked() =launch{
-        val courseID = SelEvent.value!!.courceid
-        val course = Courses.value!!.find { it.ID == courseID }
+        val course = SelCourse.value
         course!!.classBunked()
-        evaluateResult("update courses",repo.updateCourse(course,true))
-        val alert = alerts.value!!.find { it.eventId == DispEvent.value!!.ID }
-        evaluateResult("remove alert",repo.removeAlert(alert!!))
+        evaluateResult("update courses in class bunked",repo.updateCourse(course))
+        DispEvent.value!!.doneUpdate = true
+        evaluateResult("update event in class bunked",repo.updateEvent(DispEvent.value!!))
 
     }
 
     private fun classAttended() =launch{
-        val courseID = SelEvent.value!!.courceid
-        val course = Courses.value?.find { it.ID == courseID }
+        val course = SelCourse.value
         course!!.classAttended()
-        evaluateResult("update courses",repo.updateCourse(course,true))
-        val alert = alerts.value?.find { it.eventId == DispEvent.value!!.ID }
-        evaluateResult("remove alert",repo.removeAlert(alert!!))
+        evaluateResult("update courses",repo.updateCourse(course))
+        DispEvent.value!!.doneUpdate = true
+        evaluateResult("update event in class attended",repo.updateEvent(DispEvent.value!!))
     }
 
     private fun getEventWithId(id : String) = launch {
         when(val res = repo.getEventByID(id)){
             is Result.Value -> SelEvent.value = res.value
-            is Result.Error -> errorState.value = ERROR_EVENT_LOAD
+            is Result.Error -> {
+                errorState.value = ERROR_EVENT_LOAD
+                Log.e("BASE VIEW MODEL","Failed Loading event ",res.error)
+            }
         }
     }
 
     private fun getCourseWithId(id : String) = launch {
-        Courses.value!!.find {
+        Courses.value?.find {
             it.ID ==id
         }?.let {
             SelCourse.value = it
@@ -173,14 +172,20 @@ class BaseViewModel(protected val uicontext: CoroutineContext,private val repo:I
         }
         when(val res = repo.getCourseById(id)){
             is Result.Value -> SelCourse.value = res.value
-            is Result.Error -> errorState.value = ERROR_COURSE_LOAD
+            is Result.Error -> {
+                Log.e("ViewModel","error loading course",res.error)
+                errorState.value = ERROR_COURSE_LOAD
+            }
         }
     }
 
     private fun removeEvent() =launch{
-        when(repo.removeEvent(SelEvent.value!!)){
+        when(val res = repo.removeEvent(SelEvent.value!!)){
             is Result.Value -> SelEvent.value=null
-            is Result.Error -> errorState.value = ERROR_EVENT_REMOVE
+            is Result.Error -> {
+                Log.e("ViewModel","error loading events",res.error)
+                errorState.value = ERROR_EVENT_REMOVE
+            }
         }
 
     }
@@ -199,13 +204,19 @@ class BaseViewModel(protected val uicontext: CoroutineContext,private val repo:I
     private fun getEventsInMonth() = launch {
         when(val repoResult = repo.getEventsIn(Calendar.MONTH,date = curDate.value!!)){
             is Result.Value -> privateMonthlyEvents.value = repoResult.value
-            is Result.Error -> errorState.value = ERROR_EVENT_LOAD
+            is Result.Error -> {
+                Log.e("ViewModel","error loading events",repoResult.error)
+                errorState.value = ERROR_EVENT_LOAD
+            }
         }
     }
     private fun getEventsOnDate() = launch {
         when(val repoResult = repo.getEventsIn(Calendar.DAY_OF_MONTH,date = curDate.value!!)){
             is Result.Value -> privateSelectableEvents.value = repoResult.value
-            is Result.Error -> errorState.value = ERROR_EVENT_LOAD
+            is Result.Error -> {
+                Log.e("ViewModel","error loading events",repoResult.error)
+                errorState.value = ERROR_EVENT_LOAD
+            }
         }
     }
 

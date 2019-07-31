@@ -2,12 +2,12 @@ package com.example.nittcompanion.model.repository
 
 import androidx.lifecycle.LiveData
 import com.example.nittcompanion.common.Result
-import com.example.nittcompanion.common.objects.Alert
 import com.example.nittcompanion.common.objects.Course
 import com.example.nittcompanion.common.objects.Event
 import java.util.*
 
 interface IRepo {
+
     suspend fun getEventByID(iD :String) : Result<Exception,Event>
 
     suspend fun getEventsIn(field:Int, date: Calendar) : Result<Exception,List<Event>>
@@ -18,19 +18,13 @@ interface IRepo {
 
     fun getCources() : LiveData<List<Course>>
 
-    suspend fun updateCourse(course: Course,SyncInFirebase : Boolean) : Result<Exception,Unit>
+    suspend fun updateCourse(course: Course) : Result<Exception,Unit>
 
     suspend fun updateEvent(event: Event) : Result<Exception,Unit>
 
     suspend fun removeCourse(course: Course) : Result<Exception,Unit>
 
     suspend fun removeEvent(event: Event) : Result<Exception,Unit>
-
-    fun getAlerts() : LiveData<List<Alert>>
-
-    suspend fun addAlert(alert: Alert) : Result<Exception,Unit>
-
-    suspend fun removeAlert(alert: Alert) : Result<Exception,Unit>
 
     suspend fun initialise()
 

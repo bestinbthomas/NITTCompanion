@@ -5,7 +5,7 @@ const val REQ_STORAGE_PERMISSION = 5
 const val REQ_LOAD_FILE = 3
 const val REQ_NOTI_MAIN_ACTIVITY = 4
 const val REQ_NOTI_YES_PRESSED = 7
-const val REQ_NOTI_NO_PRESSED = 9
+const val REQ_NOTI_NO_PRESSED = 8
 const val REQ_NOTI_CANCELL_PRESSED = 9
 
 const val TYPE_CLASS = "Class"
@@ -23,7 +23,6 @@ const val ERROR_REMOVING_COURSE = "Error removing Course"
 const val FIREBASE_COLLECTION_NOTES = "Notes"
 const val FIREBASE_COLLECTION_COURSES = "Courses"
 const val FIREBASE_COLLECTION_EVENTS = "Events"
-const val FIREBASE_COLLECTION_ALERTS = "Alerts"
 
 const val NOTE_UPLOADED_SUCESS = 1
 const val NOTE_UPLOADED_FAIL = -1
@@ -35,7 +34,7 @@ const val HOME_COURSE_ID = "homeNotes"
 const val HOME_COURSE_NAME = "Common Files"
 
 const val KEY_EVENT_ID = "eventID"
-const val KEY_COURSE_ID = "eventID"
+const val KEY_COURSE_ID = "eventCourseID"
 const val KEY_EVENT_NAME = "eventName"
 const val KEY_IS_CLASS = "isThisClass"
 const val KEY_ACTION = "action"

@@ -11,7 +11,6 @@ import androidx.navigation.fragment.findNavController
 import com.example.nittcompanion.R
 import com.example.nittcompanion.common.*
 import com.example.nittcompanion.common.factoryAndInjector.InjectorUtils
-import com.example.nittcompanion.common.objects.Alert
 import com.example.nittcompanion.common.objects.Course
 import com.example.nittcompanion.common.objects.Event
 import kotlinx.android.synthetic.main.fragment_event_detail.view.*
@@ -21,7 +20,6 @@ class EventDetailFragment : Fragment() {
     private lateinit var event : Event
     private  lateinit var course: Course
     private lateinit var viewModel: BaseViewModel
-    private var alerts = listOf<Alert>()
     private lateinit var mView : View
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_event_detail,container,false)
@@ -42,11 +40,6 @@ class EventDetailFragment : Fragment() {
 
     private fun setViews() =activity?.let {
 
-        alerts = viewModel.alerts.value?: listOf()
-
-        val alert = !alerts.none {
-            event.ID == it.eventId
-        }
 
         mView.EventDetailName.text = event.name
         mView.Date.text = Calendar.getInstance().getCalEnderWithMillis(event.startDate).getDateInFormat()
@@ -56,7 +49,7 @@ class EventDetailFragment : Fragment() {
             mView.attendanceTxt.visibility = View.VISIBLE
             mView.EventAttendance.text = requireActivity().resources.getString(R.string.attendenceWithPercent,course.attendance.toInt())
             mView.EventAttendance.visibility = View.VISIBLE
-            if (alert) {
+            if (!event.doneUpdate && event.endDate <= Calendar.getInstance().timeInMillis) {
                 mView.DidYouAttendCard.visibility = View.VISIBLE
 
             } else {
@@ -83,12 +76,6 @@ class EventDetailFragment : Fragment() {
                 Observer {
                     course = it
                     setViews()
-                }
-            )
-            viewModel.alerts.observe(
-                act,
-                Observer {
-                    alerts = it
                 }
             )
         }

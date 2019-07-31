@@ -10,12 +10,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.example.nittcompanion.R
 import com.example.nittcompanion.common.*
-import com.example.nittcompanion.common.objects.Alert
 import com.example.nittcompanion.common.objects.Event
 import kotlinx.android.synthetic.main.event_item.view.*
 import java.util.*
 
-class EventsRecyclerAdapter(private var events: List<Event>,private var alerts : List<Alert> = listOf(), val eventClickListener: MutableLiveData<ListenTo> = MutableLiveData()) : RecyclerView.Adapter<EventsRecyclerAdapter.MyHolder>() {
+class EventsRecyclerAdapter(private var events: List<Event>, val eventClickListener: MutableLiveData<ListenTo> = MutableLiveData()) : RecyclerView.Adapter<EventsRecyclerAdapter.MyHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyHolder {
         val inflator = LayoutInflater.from(parent.context)
         return MyHolder(
@@ -46,7 +45,7 @@ class EventsRecyclerAdapter(private var events: List<Event>,private var alerts :
                 holder.evetAlert.visibility = View.VISIBLE
                 holder.evetAlert.setColorFilter(Color.YELLOW)
             }
-            alerts.find { it.eventId == events[position].ID } != null -> {
+            events[position].type == TYPE_CLASS && !events[position].doneUpdate && events[position].endDate <= Calendar.getInstance().timeInMillis -> {
                 holder.evetAlert.visibility = View.VISIBLE
                 holder.evetAlert.setColorFilter(Color.YELLOW)
             }
@@ -63,10 +62,6 @@ class EventsRecyclerAdapter(private var events: List<Event>,private var alerts :
         notifyDataSetChanged()
     }
 
-    fun updateAlerts(alerts: List<Alert>){
-        this.alerts = alerts
-        notifyDataSetChanged()
-    }
     class MyHolder(view: View) : RecyclerView.ViewHolder(view){
         var time: TextView = view.EventTime
         var Evntname: TextView = view.EventName

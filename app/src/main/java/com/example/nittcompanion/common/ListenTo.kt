@@ -1,6 +1,5 @@
 package com.example.nittcompanion.common
 
-import com.example.nittcompanion.common.objects.Alert
 import com.example.nittcompanion.common.objects.Course
 import com.example.nittcompanion.common.objects.Event
 
@@ -22,8 +21,7 @@ sealed class ListenTo {
     object AddNewEvent : ListenTo()
     object AddNewCourse : ListenTo()
     object CourseDetailStart : ListenTo()
-    data class AddAlert(val alert : Alert) : ListenTo()
-    data class UpdateCourse(val course: Course,val syncInFireStore: Boolean) : ListenTo()
+    data class UpdateCourse(val course: Course) : ListenTo()
     data class UpdateEvent(val event: Event) : ListenTo()
     data class NotificationTappedEvent(val eventID : String) : ListenTo()
     data class NotificationTappedCourse(val courseID : String) : ListenTo()

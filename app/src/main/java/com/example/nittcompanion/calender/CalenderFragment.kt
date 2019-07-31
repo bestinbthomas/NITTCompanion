@@ -58,14 +58,12 @@ class CalenderFragment : Fragment() {
 
     private fun setUpCalender() = activity?.let {
         val events = viewModel.MonthlyEvents.value
-        val alerts = viewModel.alerts.value
         MonthArray = resources.getStringArray(R.array.Months)
         selDate = Calendar.getInstance()
         GridAdapter = CalGridAdapter(
             context = requireContext(),
             date = selDate,
-            events = events ?: listOf(),
-            alerts = alerts ?: listOf()
+            events = events ?: listOf()
         )
         mView.CalGrid.adapter = GridAdapter
         mView.MonthNameTxt.text = requireActivity().resources.getString(
@@ -101,16 +99,8 @@ class CalenderFragment : Fragment() {
             viewModel.SelectableEvents.observe(
                 it,
                 Observer { events ->
-                    Log.d("CalenderFragment","events changed")
+                    Log.d("CalenderFragment", "events changed")
                     RecAdapter.updateEvents(events)
-                }
-            )
-            viewModel.alerts.observe(
-                it,
-                Observer { alerts ->
-                    GridAdapter.updateAlerts(alerts)
-                    GridAdapter.notifyDataSetChanged()
-                    RecAdapter.updateAlerts(alerts)
                 }
             )
         }

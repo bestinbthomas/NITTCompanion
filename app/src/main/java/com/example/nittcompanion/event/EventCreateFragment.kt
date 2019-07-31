@@ -1,7 +1,11 @@
 package com.example.nittcompanion.event
 
+import android.app.AlarmManager
 import android.app.DatePickerDialog
+import android.app.PendingIntent
 import android.app.TimePickerDialog
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,20 +18,16 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
-import androidx.work.Data
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
 import com.example.nittcompanion.R
 import com.example.nittcompanion.common.*
 import com.example.nittcompanion.common.factoryAndInjector.InjectorUtils
-import com.example.nittcompanion.common.objects.Alert
 import com.example.nittcompanion.common.objects.Course
 import com.example.nittcompanion.common.objects.Event
 import com.example.nittcompanion.notification.NotifyAlert
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.android.synthetic.main.fragment_event_create.*
 import kotlinx.android.synthetic.main.fragment_event_create.view.*
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 class EventCreateFragment : Fragment() {
     private lateinit var viewModel: BaseViewModel
@@ -73,6 +73,7 @@ class EventCreateFragment : Fragment() {
                 endDate[Calendar.MONTH] = month
                 endDate[Calendar.DAY_OF_MONTH] = dayOfMonth
                 mView.Date.text = startDate.getDateInFormat()
+                updateEndTime()
             }
             DatePickerDialog(
                 requireContext(),
@@ -116,7 +117,9 @@ class EventCreateFragment : Fragment() {
     }
 
     private fun updateEndTime() {
-         val time = Calendar.getInstance().getCalEnderWithMillis(event.startDate)
+
+         val time =startDate.clone() as Calendar
+        Log.e("EventCreate","update event called with start time ${time.getTimeInFormat()}")
         when(event.type){
             TYPE_CLASS -> {
                 time.add(Calendar.MINUTE,50)
@@ -142,6 +145,7 @@ class EventCreateFragment : Fragment() {
             }
         }
         event.endDate = time.timeInMillis
+        mView.EventEndTime.text = time.getTimeInFormat()
     }
 
     private fun validateName(): Boolean = if (mView.EventDetailName.editText!!.text.toString().isEmpty()) {
@@ -155,34 +159,44 @@ class EventCreateFragment : Fragment() {
     private fun saveEvent() {
         if (!validateName()) return
 
-        if (mView.ImpSwitch.isChecked) {
-            val data = Data.Builder()
-            data.putString(KEY_EVENT_ID, event.ID)
-            data.putString(KEY_EVENT_NAME, event.name)
-            data.putString(KEY_COURSE_ID, event.courceid)
-            data.putBoolean(KEY_IS_CLASS, false)
-            val delay: Long = calculateDelay(event.startDate)
-            val workRequest = OneTimeWorkRequestBuilder<NotifyAlert>()
-                .setInputData(data.build())
-                .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-                .build()
-            WorkManager.getInstance(requireActivity().applicationContext)
-                .enqueue(workRequest)
-            viewModel.listen(ListenTo.AddAlert(Alert(startDate.timeInMillis, event.ID)))
+        event.name = mView.EventDetailName.editText!!.text.toString()
+        event.courceid = try {
+            courses[mView.CourseSpinner.selectedItemPosition - 1].ID
+        } catch (e: Exception) {
+            ""
+        }
+        event.type = mView.typeSpinner.selectedItem.toString()
+        event.imp = ImpSwitch.isChecked
+        if (mView.ImpSwitch.isChecked || event.type in arrayOf(TYPE_CLASS, TYPE_LAB)) {
+
+            val notifyIntent = Intent(requireActivity().applicationContext,NotifyAlert::class.java)
+            notifyIntent.putExtra(KEY_EVENT_ID, event.ID)
+            notifyIntent.putExtra(KEY_EVENT_NAME, event.name)
+            notifyIntent.putExtra(KEY_COURSE_ID,event.courceid)
+            notifyIntent.putExtra(KEY_IS_CLASS,event.type in arrayOf(TYPE_CLASS, TYPE_LAB))
+            if(PendingIntent.getBroadcast(requireActivity().applicationContext,event.ID.takeLast(5).toInt(),notifyIntent,
+                    PendingIntent.FLAG_NO_CREATE)==null) {
+                val notifyPendingIntent = PendingIntent.getBroadcast(
+                    requireActivity().applicationContext, event.ID.takeLast(5).toInt(), notifyIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT
+                )
+                val alarmManager =
+                    requireActivity().applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+                alarmManager.set(AlarmManager.RTC_WAKEUP, event.endDate, notifyPendingIntent)
+            }
         }
         viewModel.listen(
             ListenTo.UpdateEvent(
                 Event(
-                    mView.EventDetailName.editText!!.text.toString(),
+                    event.name,
                     startDate.timeInMillis,
                     endDate.timeInMillis,
-                    mView.typeSpinner.selectedItem.toString(),
-                    try {
-                        courses[mView.CourseSpinner.selectedItemPosition - 1].ID
-                    } catch (e: Exception) {
-                        ""
-                    },
-                    event.ID
+                    event.type,
+                    event.courceid,
+                    event.ID,
+                    event.doneUpdate,
+                    event.imp
                 )
             )
         )
@@ -192,6 +206,7 @@ class EventCreateFragment : Fragment() {
     }
 
     private fun setViews() = activity?.let {
+        ImpSwitch.isChecked = event.imp
         startDate.timeInMillis = event.startDate
         endDate.timeInMillis = event.endDate
 

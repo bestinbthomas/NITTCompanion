@@ -83,12 +83,6 @@ class HomeFragment : Fragment() {
 
                 }
             )
-            viewModel.alerts.observe(
-                it,
-                Observer { alerts ->
-                    adapter.updateAlerts(alerts)
-                }
-            )
         }
     }
 

@@ -99,25 +99,25 @@ class CourseDetailFragment : Fragment() {
             course.attended++
             course.calculateClasses()
             setViews()
-            viewModel.listen(ListenTo.UpdateCourse(course,false))
+            viewModel.listen(ListenTo.UpdateCourse(course))
         }
         mView.attendedMinus.setOnClickListener {
             course.attended--
             course.calculateClasses()
             setViews()
-            viewModel.listen(ListenTo.UpdateCourse(course,false))
+            viewModel.listen(ListenTo.UpdateCourse(course))
         }
         mView.bunkedPlus.setOnClickListener {
             course.notAttended++
             course.calculateClasses()
             setViews()
-            viewModel.listen(ListenTo.UpdateCourse(course,false))
+            viewModel.listen(ListenTo.UpdateCourse(course))
         }
         mView.bunkedMinus.setOnClickListener {
             course.notAttended--
             course.calculateClasses()
             setViews()
-            viewModel.listen(ListenTo.UpdateCourse(course,false))
+            viewModel.listen(ListenTo.UpdateCourse(course))
         }
     }
 

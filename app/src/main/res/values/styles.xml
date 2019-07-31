@@ -6,7 +6,6 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-
     </style>
     
     <style name="AppTheme.NoActionBar" parent="AppTheme">
@@ -14,6 +13,11 @@
         <item name="windowNoTitle">true</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="drawerArrowStyle">@style/DrawerIcon</item>
+    </style>
+
+
+    <style name="SplashStyle" parent="Theme.MaterialComponents.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash_screen</item>
     </style>
 
 
