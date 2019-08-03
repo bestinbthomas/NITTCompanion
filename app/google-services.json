@@ -23,14 +23,6 @@
           }
         },
         {
-          "client_id": "782126181899-2pkvg7vjigh58rjd2fjs8v6vtcblbsv8.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.nittcompanion",
-            "certificate_hash": "e4c60d66e872e8a182e1423889170d74d14f68ea"
-          }
-        },
-        {
           "client_id": "782126181899-uvs90l8kip7ug5pjoortinq6hgp64vrh.apps.googleusercontent.com",
           "client_type": 3
         }

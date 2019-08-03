@@ -27,7 +27,14 @@ class NITTCompanion : Application() {
             )
             classChannel.description = "Remind to update attendance after each class"
 
-            getSystemService(NotificationManager::class.java).createNotificationChannels(mutableListOf(eventChannel,classChannel))
+            val updateChannel = NotificationChannel(
+                NOTIFICATION_CHANNEL_FCM_ID,
+                "Reminder for Updates",
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+            classChannel.description = "Reminds about new notes, Tests , Assignments"
+
+            getSystemService(NotificationManager::class.java).createNotificationChannels(mutableListOf(eventChannel,classChannel,updateChannel))
         }
     }
 }

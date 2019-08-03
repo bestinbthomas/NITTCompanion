@@ -34,18 +34,22 @@ const val FILE_DIR_EXTENTION = "/NITTCompanion"
 const val HOME_COURSE_ID = "homeNotes"
 const val HOME_COURSE_NAME = "Common Files"
 
+const val KEY_UPDATE_TYPE = "type"
+const val KEY_TITTLE = "tittle"
+const val KEY_MESSAGE = "message"
 const val KEY_EVENT_ID = "eventID"
-const val KEY_COURSE_ID = "eventCourseID"
+const val KEY_COURSE_ID = "courseID"
 const val KEY_EVENT_NAME = "eventName"
+const val KEY_COURSE_NAME = "CourseName"
 const val KEY_IS_CLASS = "isThisClass"
 const val KEY_ACTION = "action"
 const val KEY_CLASS = "class"
 const val KEY_CR = "isRep"
 
-const val ALERTS_WORK_TAG = "check_alerts"
-
 const val NOTIFICATION_CHANNEL_EVENT_ID = "Event Reminder"
 const val NOTIFICATION_NOTIFICATION_EVENT_ID = 1357
+const val NOTIFICATION_NOTIFICATION_FCM_ID = 2468
 const val NOTIFICATION_CHANNEL_CLASS_ID = "Class Reminder"
+const val NOTIFICATION_CHANNEL_FCM_ID = "FirestoreNotifications"
 
 const val SHARED_PREF = "sharedpref"

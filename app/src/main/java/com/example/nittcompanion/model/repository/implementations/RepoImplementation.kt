@@ -82,7 +82,7 @@ class RepoImplementation private constructor(val app: Application) : IRepo {
              }
               for(docChange in querrySnapshot!!.documentChanges){
                   courses.value = when(docChange.type){
-                      DocumentChange.Type.ADDED -> courses.value//courseAdded(docChange.document)
+                      DocumentChange.Type.ADDED -> courseAdded(docChange.document)
                       DocumentChange.Type.MODIFIED -> courseModified(docChange.document)
                       DocumentChange.Type.REMOVED -> courseRemoved(docChange.document)
                   }
@@ -109,15 +109,14 @@ class RepoImplementation private constructor(val app: Application) : IRepo {
         return  refcourses
     }
 
-    /*private fun courseAdded(document: QueryDocumentSnapshot) : List<Course>{
+    private fun courseAdded(document: QueryDocumentSnapshot) : List<Course>{
         val refcourses = getCources().value!! as MutableList
         val course = document.toObject(FireCourse::class.java)
-        if(refcourses.none { it.ID == course.ID }) {
-            refcourses.add(Course(course.name, course.credit, course.classEvent, course.ID, course.lastEventCreated))
-            userAttendanceReference.document(course.ID).set(Attendence())
+        if(refcourses.indexOfFirst { it.ID == course.ID } == -1){
+            refcourses.add(Course(course.name,course.credit,course.classEvent,course.ID,course.lastEventCreated))
         }
         return  refcourses
-    }*/
+    }
 
     private fun listenAttendance()  {
          userAttendanceReference.addSnapshotListener { querrySnapshot, exception ->

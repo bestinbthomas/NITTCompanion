@@ -1,10 +1,10 @@
 package com.example.nittcompanion.common
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -24,6 +24,7 @@ import com.example.nittcompanion.common.factoryAndInjector.InjectorUtils
 import com.example.nittcompanion.login.LoginActivity
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.nav_head.view.*
 
@@ -35,7 +36,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var viewModel: BaseViewModel
     private var eventFromNotiId : String? = null
     private var courseFromNotiId : String? = null
+    private var courseNameFromNoti : String? = null
     private var isClassFromNoti = false
+    private var updateType : String? = null
     private lateinit var loadSnack : Snackbar
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,6 +74,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             isClassFromNoti = mintent.getBooleanExtra(KEY_IS_CLASS,false)
             Log.e("MAINActivity","id from notification $eventFromNotiId")
         } else eventFromNotiId = null
+        if (mintent.hasExtra(KEY_UPDATE_TYPE)){
+            updateType = mintent.getStringExtra(KEY_UPDATE_TYPE)
+            courseFromNotiId = mintent.getStringExtra(KEY_COURSE_ID)
+            courseNameFromNoti = mintent.getStringExtra(KEY_COURSE_NAME)
+        }
+        subscribeToClass()
     }
 
     override fun onStart() {
@@ -118,6 +127,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val direction = MainNavigationDirections.actionMainToDestinationEventDetail(true)
             findNavController(R.id.HostFragment).navigate(direction)
         }
+        updateType?.let {
+            if(updateType == "notes"){
+                findNavController(R.id.HostFragment).navigate(MainNavigationDirections.actionGlobalDestinationNotes(courseFromNotiId!!,courseNameFromNoti!!))
+            }
+        }
     }
 
     private fun setObservations() {
@@ -136,26 +150,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     loadSnack.dismiss()
             }
         )
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-       /* menuInflater.inflate(R.menu.nav_toolbar, menu)
-        val drawable = menu?.getItem(0)?.icon
-        drawable?.let {
-            it.mutate()
-            it.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP)
-        }*/
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        //val navigated = NavigationUI.onNavDestinationSelected(item!!,navigationController)
-        super.onOptionsItemSelected(item)
-        /*if (item?.itemId == R.id.destination_alarm) {
-            navigationController.navigate(R.id.destination_alarm)
-            return true
-        }*/
-        return false
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -191,4 +185,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         startActivity(intent)
         finishAffinity()
     }
+    private fun subscribeToClass() {
+        val topic = getSharedPreferences(SHARED_PREF, Context.MODE_PRIVATE).getString(KEY_CLASS,"")
+        FirebaseMessaging.getInstance().subscribeToTopic(topic)
+            .addOnCompleteListener { task ->
+                var msg = "subscription successful"
+                if (!task.isSuccessful) {
+                    msg = "subscription failed"
+                }
+                Log.d("MainActivity", msg)
+            }
+    }
+
 }

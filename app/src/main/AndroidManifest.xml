@@ -51,7 +51,14 @@
                     android:resource="@xml/provider_paths"/>
         </provider>
         <receiver android:name=".notification.NotifyAlert"/>
-        <!--<service android:name=".background.ClassesChecker"/>-->
+        <service android:name=".notification.FirebaseMessageHandler">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+            <meta-data
+                    android:name="com.google.firebase.messaging.default_notification_icon"
+                    android:resource="@drawable/ic_noti_icon" />
+        </service>
     </application>
 
 </manifest>

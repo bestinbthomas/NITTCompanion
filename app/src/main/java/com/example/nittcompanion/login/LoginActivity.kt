@@ -213,13 +213,13 @@ class LoginActivity : AppCompatActivity() {
 
     private fun addUserData() {
         val userData = hashMapOf<String, Any>(
-            "class" to "$dep $year $sec",
+            "class" to "${dep}_${year}_$sec",
             "cr" to cr
         )
 
         val sharedPreference = getSharedPreferences(SHARED_PREF, Context.MODE_PRIVATE)
         val editor  = sharedPreference.edit()
-        editor.putString(KEY_CLASS,"$dep $year $sec")
+        editor.putString(KEY_CLASS,"${dep}_${year}_$sec")
         editor.putBoolean(KEY_CR,cr)
         editor.apply()
         firestoreInstance.collection("user").document(auth.currentUser!!.uid).set(userData)
