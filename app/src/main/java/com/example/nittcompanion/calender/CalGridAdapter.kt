@@ -58,7 +58,7 @@ class CalGridAdapter(
                         cautionbar1.visibility = View.VISIBLE
                     else if (it.type == TYPE_OTHER)
                         cautionbar2.visibility = View.VISIBLE
-                    if(it.imp || (!it.doneUpdate && it.endDate <= Calendar.getInstance().timeInMillis))
+                    if(it.imp )
                         cautiondot.visibility = View.VISIBLE
                 }
             }

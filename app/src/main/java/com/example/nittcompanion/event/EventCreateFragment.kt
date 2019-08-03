@@ -183,7 +183,8 @@ class EventCreateFragment : Fragment() {
                 val alarmManager =
                     requireActivity().applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-                alarmManager.set(AlarmManager.RTC_WAKEUP, event.endDate, notifyPendingIntent)
+                val time = if(event.type in arrayOf(TYPE_CLASS, TYPE_LAB))event.endDate else event.startDate - (30*60*1000)
+                alarmManager.set(AlarmManager.RTC_WAKEUP, time, notifyPendingIntent)
             }
         }
         viewModel.listen(
@@ -195,7 +196,6 @@ class EventCreateFragment : Fragment() {
                     event.type,
                     event.courceid,
                     event.ID,
-                    event.doneUpdate,
                     event.imp
                 )
             )
@@ -210,6 +210,12 @@ class EventCreateFragment : Fragment() {
         startDate.timeInMillis = event.startDate
         endDate.timeInMillis = event.endDate
 
+        if(!it.getSharedPreferences(SHARED_PREF, Context.MODE_PRIVATE).getBoolean(KEY_CR,false)){
+            mView.typeSpinner.visibility = View.GONE
+            mView.typeSpinnerLabel.visibility = View.GONE
+            mView.CourseSpinner.visibility = View.GONE
+            mView.CourseSpinnerLabel.visibility = View.GONE
+        }
         val coursenames = mutableListOf<String>()
         coursenames.add("None")
 
@@ -227,7 +233,7 @@ class EventCreateFragment : Fragment() {
         }
         mView.typeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onNothingSelected(parent: AdapterView<*>?) {
-
+                event.type = TYPE_OTHER
             }
 
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {

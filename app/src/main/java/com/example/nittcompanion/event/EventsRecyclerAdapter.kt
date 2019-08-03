@@ -41,11 +41,7 @@ class EventsRecyclerAdapter(private var events: List<Event>, val eventClickListe
                 holder.evetAlert.visibility = View.VISIBLE
                 holder.evetAlert.setColorFilter(Color.RED)
             }
-            events[position].type == TYPE_ASSIGNMENT -> {
-                holder.evetAlert.visibility = View.VISIBLE
-                holder.evetAlert.setColorFilter(Color.YELLOW)
-            }
-            events[position].type == TYPE_CLASS && !events[position].doneUpdate && events[position].endDate <= Calendar.getInstance().timeInMillis -> {
+            events[position].type in arrayOf(TYPE_ASSIGNMENT, TYPE_CLASS, TYPE_LAB) || events[position].imp -> {
                 holder.evetAlert.visibility = View.VISIBLE
                 holder.evetAlert.setColorFilter(Color.YELLOW)
             }

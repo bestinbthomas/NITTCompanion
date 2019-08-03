@@ -22,6 +22,7 @@ sealed class ListenTo {
     object AddNewCourse : ListenTo()
     object CourseDetailStart : ListenTo()
     data class UpdateCourse(val course: Course) : ListenTo()
+    data class UpdateAttendance(val course: Course) : ListenTo()
     data class UpdateEvent(val event: Event) : ListenTo()
     data class NotificationTappedEvent(val eventID : String) : ListenTo()
     data class NotificationTappedCourse(val courseID : String) : ListenTo()

@@ -1,5 +1,6 @@
 package com.example.nittcompanion.courses
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,9 +13,9 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.nittcompanion.R
-import com.example.nittcompanion.common.BaseViewModel
-import com.example.nittcompanion.common.ListenTo
+import com.example.nittcompanion.common.*
 import com.example.nittcompanion.common.factoryAndInjector.InjectorUtils
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_courses.view.*
 
 class CoursesFragment : Fragment() {
@@ -39,9 +40,15 @@ class CoursesFragment : Fragment() {
     }
 
     private fun setOnClicks() =activity?.let {
-        mView.addCourseFAB.setOnClickListener {
-            viewModel.listen(ListenTo.AddNewCourse)
-            findNavController().navigate(R.id.action_destination_courses_to_destination_add_courses)
+        mView.addCourseFAB.setOnClickListener { _ ->
+            if(it.getSharedPreferences(SHARED_PREF, Context.MODE_PRIVATE).getBoolean(KEY_CR,false)){
+                viewModel.listen(ListenTo.AddNewCourse)
+                findNavController().navigate(R.id.action_destination_courses_to_destination_add_courses)
+            }
+            else{
+                createSnackbar("only CR can add courses",Snackbar.LENGTH_SHORT)
+            }
+
         }
     }
 

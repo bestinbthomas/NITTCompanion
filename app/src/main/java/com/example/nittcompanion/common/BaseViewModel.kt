@@ -1,5 +1,10 @@
 package com.example.nittcompanion.common
 
+import android.app.AlarmManager
+import android.app.Application
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -8,13 +13,14 @@ import androidx.lifecycle.ViewModel
 import com.example.nittcompanion.common.objects.Course
 import com.example.nittcompanion.common.objects.Event
 import com.example.nittcompanion.model.repository.IRepo
+import com.example.nittcompanion.notification.NotifyAlert
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.coroutines.CoroutineContext
 
-class BaseViewModel(private val uicontext: CoroutineContext, private val repo:IRepo ) : ViewModel() ,CoroutineScope{
+class BaseViewModel(private val uicontext: CoroutineContext, private val repo:IRepo, private val app : Application) : ViewModel() ,CoroutineScope{
 
     private val TAG = "BaseViewModel"
     private val jobTracker: Job
@@ -70,26 +76,57 @@ class BaseViewModel(private val uicontext: CoroutineContext, private val repo:IR
             is ListenTo.ActivityStarted -> initialiseRepo()
             is ListenTo.NotificationTappedEvent -> getEventWithId(listenTo.eventID)
             is ListenTo.NotificationTappedCourse -> getCourseWithId(listenTo.courseID)
+            is ListenTo.UpdateAttendance -> updateAttendance(listenTo.course)
         }
     }
 
     private fun initialiseRepo() = launch{
+        loadingState.value = true
         repo.initialise()
+        loadingState.value = false
     }
 
     private fun initHomeFragment() = launch{
         privateSelectableEvents.value = listOf()
+        loadingState.value = true
         when(val res = repo.getUpcommingEvents(7)){
-            is Result.Value -> privateSelectableEvents.value = res.value
+            is Result.Value -> {
+                addNotifications(res.value)
+                privateSelectableEvents.value = res.value
+            }
             is Result.Error -> {
                 errorState.value = ERROR_EVENT_LOAD
                 Log.e("ViewModel","error loading events",res.error)
+            }
+        }
+        loadingState.value = false
+    }
+
+    private fun addNotifications(events: List<Event>) = launch{
+        events.forEach{event ->
+            val notifyIntent = Intent(app,NotifyAlert::class.java)
+            notifyIntent.putExtra(KEY_EVENT_ID, event.ID)
+            notifyIntent.putExtra(KEY_EVENT_NAME, event.name)
+            notifyIntent.putExtra(KEY_COURSE_ID,event.courceid)
+            notifyIntent.putExtra(KEY_IS_CLASS,event.type in arrayOf(TYPE_CLASS, TYPE_LAB))
+            if(PendingIntent.getBroadcast(app,event.ID.takeLast(5).toInt(),notifyIntent,
+                    PendingIntent.FLAG_NO_CREATE)==null) {
+                val notifyPendingIntent = PendingIntent.getBroadcast(
+                    app, event.ID.takeLast(5).toInt(), notifyIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT
+                )
+                val alarmManager =
+                    app.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+                val time = if(event.type in arrayOf(TYPE_CLASS, TYPE_LAB))event.endDate else event.startDate - (30*60*1000)
+                alarmManager.set(AlarmManager.RTC_WAKEUP, time, notifyPendingIntent)
             }
         }
     }
 
     private fun initCourseDetail() =launch{
         privateSelectableEvents.value = listOf()
+        loadingState.value = true
          when(val res = repo.getAlertEvents(DispCourse.value!!.ID)){
             is Result.Value -> privateSelectableEvents.value = res.value
             is Result.Error -> {
@@ -97,6 +134,7 @@ class BaseViewModel(private val uicontext: CoroutineContext, private val repo:IR
                 errorState.value = ERROR_EVENT_LOAD
             }
         }
+        loadingState.value = false
     }
 
     private fun updateEvent(event: Event) {
@@ -112,6 +150,10 @@ class BaseViewModel(private val uicontext: CoroutineContext, private val repo:IR
 
     private fun updateCourse(course: Course) {
         launch {  evaluateResult("update courses",repo.updateCourse(course))}
+    }
+
+    private fun updateAttendance(course: Course) {
+        launch {  evaluateResult("update courses",repo.updateAttendance(course))}
     }
 
     private fun addNewCourse() {
@@ -140,8 +182,11 @@ class BaseViewModel(private val uicontext: CoroutineContext, private val repo:IR
         val course = SelCourse.value
         course!!.classBunked()
         evaluateResult("update courses in class bunked",repo.updateCourse(course))
-        DispEvent.value!!.doneUpdate = true
         evaluateResult("update event in class bunked",repo.updateEvent(DispEvent.value!!))
+        val notifyIntent = Intent(app, NotifyAlert::class.java)
+        PendingIntent.getBroadcast(
+            app, DispEvent.value!!.ID.takeLast(5).toInt(),notifyIntent,
+            PendingIntent.FLAG_NO_CREATE)?.cancel()
 
     }
 
@@ -149,11 +194,15 @@ class BaseViewModel(private val uicontext: CoroutineContext, private val repo:IR
         val course = SelCourse.value
         course!!.classAttended()
         evaluateResult("update courses",repo.updateCourse(course))
-        DispEvent.value!!.doneUpdate = true
         evaluateResult("update event in class attended",repo.updateEvent(DispEvent.value!!))
+        val notifyIntent = Intent(app, NotifyAlert::class.java)
+        PendingIntent.getBroadcast(
+            app, DispEvent.value!!.ID.takeLast(5).toInt(),notifyIntent,
+            PendingIntent.FLAG_NO_CREATE)?.cancel()
     }
 
     private fun getEventWithId(id : String) = launch {
+        loadingState.value = true
         when(val res = repo.getEventByID(id)){
             is Result.Value -> SelEvent.value = res.value
             is Result.Error -> {
@@ -161,6 +210,7 @@ class BaseViewModel(private val uicontext: CoroutineContext, private val repo:IR
                 Log.e("BASE VIEW MODEL","Failed Loading event ",res.error)
             }
         }
+        loadingState.value = false
     }
 
     private fun getCourseWithId(id : String) = launch {
@@ -170,6 +220,7 @@ class BaseViewModel(private val uicontext: CoroutineContext, private val repo:IR
             SelCourse.value = it
             return@launch
         }
+        loadingState.value = true
         when(val res = repo.getCourseById(id)){
             is Result.Value -> SelCourse.value = res.value
             is Result.Error -> {
@@ -177,13 +228,24 @@ class BaseViewModel(private val uicontext: CoroutineContext, private val repo:IR
                 errorState.value = ERROR_COURSE_LOAD
             }
         }
+        loadingState.value = false
     }
 
     private fun removeEvent() =launch{
         when(val res = repo.removeEvent(SelEvent.value!!)){
-            is Result.Value -> SelEvent.value=null
+            is Result.Value -> {
+                val event = SelEvent.value!!
+                SelEvent.value=null
+                val notifyIntent = Intent(app,NotifyAlert::class.java)
+                notifyIntent.putExtra(KEY_EVENT_ID, event.ID)
+                notifyIntent.putExtra(KEY_EVENT_NAME, event.name)
+                notifyIntent.putExtra(KEY_COURSE_ID,event.courceid)
+                notifyIntent.putExtra(KEY_IS_CLASS,event.type in arrayOf(TYPE_CLASS, TYPE_LAB))
+                PendingIntent.getBroadcast(app,event.ID.takeLast(5).toInt(),notifyIntent,
+                        PendingIntent.FLAG_NO_CREATE)?.cancel()
+            }
             is Result.Error -> {
-                Log.e("ViewModel","error loading events",res.error)
+                Log.e("ViewModel","error removing events",res.error)
                 errorState.value = ERROR_EVENT_REMOVE
             }
         }
@@ -234,6 +296,7 @@ class BaseViewModel(private val uicontext: CoroutineContext, private val repo:IR
         cal.add(Calendar.MONTH,change)
         curDate.value = cal
         getEventsInMonth()
+        getEventsOnDate()
 
     }
 
@@ -250,6 +313,9 @@ class BaseViewModel(private val uicontext: CoroutineContext, private val repo:IR
 
     private val errorState = MutableLiveData<String>()
     val error: LiveData<String> get() = errorState
+
+    private val loadingState = MutableLiveData<Boolean>()
+    val loading : LiveData<Boolean> get() = loadingState
 
     override val coroutineContext: CoroutineContext
         get() = uicontext+jobTracker

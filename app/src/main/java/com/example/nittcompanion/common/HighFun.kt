@@ -1,5 +1,8 @@
 package com.example.nittcompanion.common
 
+import com.example.nittcompanion.common.objects.Attendence
+import com.example.nittcompanion.common.objects.Course
+import com.example.nittcompanion.common.objects.FireCourse
 import com.example.nittcompanion.model.User
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
@@ -40,3 +43,5 @@ fun getCurrentUser() = when (val fireUser = FirebaseAuth.getInstance().currentUs
         )
     }
 }
+
+fun fireCoursetoCourse(fireCourse: FireCourse,attendence: Attendence) : Course = Course(fireCourse.name,fireCourse.credit,fireCourse.classEvent,fireCourse.ID,fireCourse.lastEventCreated,attendence.attended,attendence.notAttended)

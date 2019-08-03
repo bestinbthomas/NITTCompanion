@@ -89,7 +89,8 @@
             style="@style/MyFilledButton"
             android:id="@+id/EditCourseBtn"
             app:layout_constraintEnd_toEndOf="parent" app:layout_constraintBaseline_toBaselineOf="@+id/DeleteCourseBtn"
-            android:layout_marginEnd="32dp"/>
+            android:layout_marginEnd="32dp"
+    />
     <TextView
             android:text="@string/addEvent"
             android:layout_width="wrap_content"
@@ -107,8 +108,8 @@
             android:drawableStart="@drawable/ic_notes"
             android:id="@+id/NotesBtn"
             android:layout_marginStart="32dp"
-            app:layout_constraintBaseline_toBaselineOf="@+id/DeleteCourseBtn"
-            app:layout_constraintStart_toStartOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginBottom="27dp"
+            app:layout_constraintBottom_toBottomOf="parent"/>
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

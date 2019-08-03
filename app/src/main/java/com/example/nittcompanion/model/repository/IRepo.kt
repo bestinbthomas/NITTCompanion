@@ -20,6 +20,8 @@ interface IRepo {
 
     suspend fun updateCourse(course: Course) : Result<Exception,Unit>
 
+    suspend fun updateAttendance(course: Course) : Result<Exception,Unit>
+
     suspend fun updateEvent(event: Event) : Result<Exception,Unit>
 
     suspend fun removeCourse(course: Course) : Result<Exception,Unit>

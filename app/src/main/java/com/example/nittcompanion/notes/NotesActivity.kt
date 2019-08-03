@@ -2,6 +2,7 @@ package com.example.nittcompanion.notes
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
 import android.app.DownloadManager
 import android.content.Context
 import android.content.Intent
@@ -11,7 +12,6 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.OpenableColumns
 import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -24,8 +24,10 @@ import com.example.nittcompanion.BuildConfig
 import com.example.nittcompanion.R
 import com.example.nittcompanion.common.*
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import kotlinx.android.synthetic.main.activity_notes.*
 import java.io.File
 
@@ -37,15 +39,17 @@ class NotesActivity : AppCompatActivity() {
     private val notesList: MutableList<Note> = mutableListOf()
     private val args : NotesActivityArgs by navArgs()
     private val user = FirebaseAuth.getInstance().currentUser
-    private val storageReference = FirebaseStorage.getInstance().reference.child("user").child(user!!.uid)
-    private val firestoreReferance = FirebaseFirestore.getInstance().collection("user").document(user!!.uid).collection(FIREBASE_COLLECTION_NOTES)
+    private val storageRootReference = FirebaseStorage.getInstance().reference.child("class")
+    private lateinit var storageReference : StorageReference
+    private val firestoreRootReference = FirebaseFirestore.getInstance().collection("class")
+    private lateinit var firestoreReference : CollectionReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_notes)
         title = "Notes"
-
         setupRecycler()
+
     }
 
     private fun setupRecycler() {
@@ -53,11 +57,7 @@ class NotesActivity : AppCompatActivity() {
         adapter.noteSelectLiveData.observe(
             this,
             Observer {
-                Toast.makeText(
-                    this,
-                    "note at position $it selected \nfilenamee : ${notesList[it].name} \nlink : ${notesList[it].Link} \n id : ${notesList[it].iD}",
-                    Toast.LENGTH_SHORT
-                ).show()
+
                 if (notesList[it].uri != null) {
                     uploadFile(notesList[it].uri!!, notesList[it].name)
                 }
@@ -65,13 +65,59 @@ class NotesActivity : AppCompatActivity() {
                     openNote(notesList[it])
             }
         )
+        adapter.noteLongPressLiveData.observe(
+            this,
+            Observer {
+                AlertDialog.Builder(this)
+                    .setTitle("Confirm Delete")
+                    .setMessage("Do you want to delete ${notesList[it].name}")
+                    .setPositiveButton("Yes"){ _,_ ->
+                        deleteNote(notesList[it])
+                    }
+                    .setNegativeButton("No"){ _,_ ->}
+                    .create()
+                    .show()
+            }
+        )
         NotesListRec.adapter = adapter
         NotesListRec.itemAnimator = DefaultItemAnimator()
         NotesListRec.layoutManager = LinearLayoutManager(this)
     }
 
+    private fun deleteNote(note: Note) {
+        notesList.remove(note)
+        adapter.notifyDataSetChanged()
+        if(getSharedPreferences(SHARED_PREF, Context.MODE_PRIVATE).getBoolean(KEY_CR,false)) {
+            firestoreReference.document(courseid).collection(FIREBASE_COLLECTION_NOTES).document(note.iD).delete()
+                .addOnFailureListener {
+                    Log.e("NOtes","",it)
+                }
+                .addOnSuccessListener {
+                    Log.e("NOtes","successfully deleted")
+                }
+            storageReference.child(courseid).child(note.name).delete()
+        }
+
+        val state = Environment.getExternalStorageState()
+        if (Environment.MEDIA_MOUNTED == state) {
+            val root = Environment.getExternalStorageDirectory()
+            val dir = File(root.absolutePath + "/" + Environment.DIRECTORY_DOCUMENTS + FILE_DIR_EXTENTION)
+            if (!dir.exists()) dir.mkdir()
+
+            val file = File(dir, note.name)
+            if(file.exists()){
+                file.delete()
+            }
+        }
+    }
+
     override fun onStart() {
         super.onStart()
+
+        val sharedPreference = getSharedPreferences(SHARED_PREF, Context.MODE_PRIVATE)
+        val mClass = sharedPreference.getString(KEY_CLASS,"")
+        storageReference = storageRootReference.child(mClass!!)
+        firestoreReference = firestoreRootReference.document(mClass).collection(FIREBASE_COLLECTION_NOTES)
 
         courseid = args.courseID
         coursename = args.courseName
@@ -156,7 +202,7 @@ class NotesActivity : AppCompatActivity() {
 
                 }
                 .addOnFailureListener {
-                    Log.e("Notes", it.toString())
+                    Log.e("Notes", "failed to uplpoad note",it)
                     val note = notesList.filter { note ->
                         note.name == fileName
                     }
@@ -172,7 +218,7 @@ class NotesActivity : AppCompatActivity() {
     }
 
     private fun addtoFirestore(name: String, link: String) {
-        firestoreReferance.document(courseid).collection(FIREBASE_COLLECTION_NOTES).add(Note(name, link))
+        firestoreReference.document(courseid).collection(FIREBASE_COLLECTION_NOTES).add(Note(name, link))
             .addOnSuccessListener { Docref ->
                 val note = notesList.filter {
                     it.name == name
@@ -186,12 +232,12 @@ class NotesActivity : AppCompatActivity() {
                 Log.e("Notes", "data uploaded")
             }
             .addOnFailureListener {
-                Log.e("Notes", "data not uploaded")
+                Log.e("Notes", "data not uploaded",it)
             }
     }
 
     private fun fetchList() {
-        firestoreReferance.document(courseid).collection(FIREBASE_COLLECTION_NOTES).get()
+        firestoreReference.document(courseid).collection(FIREBASE_COLLECTION_NOTES).get()
             .addOnSuccessListener { querrySnapshot ->
                 querrySnapshot.forEach { documentSnapshot ->
                     val newNote = documentSnapshot.toObject(Note::class.java)

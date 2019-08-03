@@ -8,19 +8,32 @@
     <fragment android:id="@+id/destination_home" android:name="com.example.nittcompanion.home.HomeFragment"
               android:label="Home" tools:layout="@layout/fragment_home">
         <action android:id="@+id/action_destination_home_to_destination_courses"
-                app:destination="@id/destination_courses"/>
+                app:destination="@id/destination_courses" app:enterAnim="@anim/nav_default_enter_anim"
+                app:exitAnim="@anim/nav_default_exit_anim" app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+                app:popExitAnim="@anim/nav_default_pop_exit_anim"
+        />
         <action android:id="@+id/action_destination_home_to_destination_calender"
-                app:destination="@id/destination_calender"/>
-        <action android:id="@+id/action_destination_home_to_destination_notes" app:destination="@id/destination_notes"/>
+                app:destination="@id/destination_calender" app:enterAnim="@anim/nav_default_enter_anim"
+                app:exitAnim="@anim/nav_default_exit_anim" app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+                app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
+        <action android:id="@+id/action_destination_home_to_destination_notes" app:destination="@id/destination_notes"
+                app:enterAnim="@anim/nav_default_enter_anim" app:exitAnim="@anim/nav_default_exit_anim"
+                app:popEnterAnim="@anim/nav_default_pop_enter_anim" app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
         <action android:id="@+id/action_destination_home_to_destination_event_detail"
-                app:destination="@id/destination_event_detail"/>
+                app:destination="@id/destination_event_detail" app:enterAnim="@anim/nav_default_enter_anim"
+                app:exitAnim="@anim/nav_default_exit_anim" app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+                app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
     </fragment>
     <fragment android:id="@+id/destination_courses" android:name="com.example.nittcompanion.courses.CoursesFragment"
               android:label="Courses" tools:layout="@layout/fragment_courses">
         <action android:id="@+id/action_destination_courses_to_destination_course_detail"
-                app:destination="@id/destination_course_detail"/>
+                app:destination="@id/destination_course_detail" app:enterAnim="@anim/nav_default_enter_anim"
+                app:exitAnim="@anim/nav_default_exit_anim" app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+                app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
         <action android:id="@+id/action_destination_courses_to_destination_add_courses"
-                app:destination="@id/destination_add_courses"/>
+                app:destination="@id/destination_add_courses" app:enterAnim="@anim/nav_default_enter_anim"
+                app:exitAnim="@anim/nav_default_exit_anim" app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+                app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
     </fragment>
     <fragment android:id="@+id/destination_calender" android:name="com.example.nittcompanion.calender.CalenderFragment"
               android:label="Schedule" tools:layout="@layout/fragment_calender">
@@ -29,10 +42,12 @@
                 app:exitAnim="@anim/nav_default_exit_anim" app:popEnterAnim="@anim/nav_default_pop_enter_anim"
                 app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
         <action android:id="@+id/action_destination_calender_to_destination_event_detail"
-                app:destination="@id/destination_event_detail"/>
+                app:destination="@id/destination_event_detail" app:enterAnim="@anim/nav_default_enter_anim"
+                app:exitAnim="@anim/nav_default_exit_anim" app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+                app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
     </fragment>
     <fragment android:id="@+id/destination_alarm" android:name="com.example.nittcompanion.alarm.AlarmFragment"
-              android:label="Alarms" tools:layout="@layout/fragment_alarm"/>
+              android:label="Alarms" tools:layout="@layout/fragment_alarm" />
     <activity android:id="@+id/destination_notes" android:name="com.example.nittcompanion.notes.NotesActivity"
               android:label="Notes" tools:layout="@layout/activity_notes">
         <argument android:name="courseID" app:argType="string"/>
@@ -42,7 +57,10 @@
               android:name="com.example.nittcompanion.event.EventDetailFragment"
               android:label="Event">
         <action android:id="@+id/action_destination_event_detail_to_destination_event_create"
-                app:destination="@id/destination_event_create"/>
+                app:destination="@id/destination_event_create" app:enterAnim="@anim/nav_default_enter_anim"
+                app:exitAnim="@anim/nav_default_exit_anim" app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+                app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
+        <argument android:name="showCard" app:argType="boolean" android:defaultValue="false"/>
     </fragment>
     <fragment android:id="@+id/destination_event_create"
               tools:layout="@layout/fragment_event_create"
@@ -54,15 +72,27 @@
               android:name="com.example.nittcompanion.courses.CourseDetailFragment"
               android:label="Course" tools:layout="@layout/fragment_course_detail">
         <action android:id="@+id/action_destination_course_detail_to_destination_notes"
-                app:destination="@id/destination_notes"/>
+                app:destination="@id/destination_notes" app:enterAnim="@anim/nav_default_enter_anim"
+                app:exitAnim="@anim/nav_default_exit_anim" app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+                app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
         <action android:id="@+id/action_destination_course_detail_to_destination_event_create"
-                app:destination="@id/destination_event_create"/>
+                app:destination="@id/destination_event_create" app:enterAnim="@anim/nav_default_enter_anim"
+                app:exitAnim="@anim/nav_default_exit_anim" app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+                app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
         <action android:id="@+id/action_destination_course_detail_to_destination_event_detail"
-                app:destination="@id/destination_event_detail"/>
+                app:destination="@id/destination_event_detail" app:enterAnim="@anim/nav_default_enter_anim"
+                app:exitAnim="@anim/nav_default_exit_anim" app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+                app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
         <action android:id="@+id/action_destination_course_detail_to_destination_add_courses"
-                app:destination="@id/destination_add_courses"/>
+                app:destination="@id/destination_add_courses" app:enterAnim="@anim/nav_default_enter_anim"
+                app:exitAnim="@anim/nav_default_exit_anim" app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+                app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
     </fragment>
     <fragment android:id="@+id/destination_add_courses"
               android:name="com.example.nittcompanion.courses.AddCourseFragment"
               android:label="Edit Course" tools:layout="@layout/fragment_add_course"/>
+    <action android:id="@+id/action_main_to_destination_event_detail" app:destination="@id/destination_event_detail"
+            app:enterAnim="@anim/nav_default_enter_anim" app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim" app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:launchSingleTop="true"/>
 </navigation>

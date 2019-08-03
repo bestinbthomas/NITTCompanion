@@ -12,6 +12,7 @@ class InjectorUtils(val app: Application) : AndroidViewModel(app){
 
     fun provideBaseViewModelFactory() : BaseViewModelFactory {
         return BaseViewModelFactory(
+            app,
             getEventRepo()
         )
     }

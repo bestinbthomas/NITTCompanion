@@ -2,6 +2,7 @@ package com.example.nittcompanion.courses
 
 
 import android.app.AlertDialog
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,7 +16,9 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.nittcompanion.R
 import com.example.nittcompanion.common.BaseViewModel
+import com.example.nittcompanion.common.KEY_CR
 import com.example.nittcompanion.common.ListenTo
+import com.example.nittcompanion.common.SHARED_PREF
 import com.example.nittcompanion.common.factoryAndInjector.InjectorUtils
 import com.example.nittcompanion.common.objects.Course
 import com.example.nittcompanion.event.EventsRecyclerAdapter
@@ -53,7 +56,7 @@ class CourseDetailFragment : Fragment() {
     }
 
     private fun setUpRecycler()  =activity?.let{
-        adapter = EventsRecyclerAdapter(listOf())
+        adapter = EventsRecyclerAdapter(mutableListOf())
         mView.CourseAlertsRecView.adapter = adapter
         mView.CourseAlertsRecView.itemAnimator = DefaultItemAnimator()
         mView.CourseAlertsRecView.addItemDecoration(DividerItemDecoration(requireActivity(), DividerItemDecoration.VERTICAL))
@@ -99,29 +102,34 @@ class CourseDetailFragment : Fragment() {
             course.attended++
             course.calculateClasses()
             setViews()
-            viewModel.listen(ListenTo.UpdateCourse(course))
+            viewModel.listen(ListenTo.UpdateAttendance(course))
         }
         mView.attendedMinus.setOnClickListener {
             course.attended--
             course.calculateClasses()
             setViews()
-            viewModel.listen(ListenTo.UpdateCourse(course))
+            viewModel.listen(ListenTo.UpdateAttendance(course))
         }
         mView.bunkedPlus.setOnClickListener {
             course.notAttended++
             course.calculateClasses()
             setViews()
-            viewModel.listen(ListenTo.UpdateCourse(course))
+            viewModel.listen(ListenTo.UpdateAttendance(course))
         }
         mView.bunkedMinus.setOnClickListener {
             course.notAttended--
             course.calculateClasses()
             setViews()
-            viewModel.listen(ListenTo.UpdateCourse(course))
+            viewModel.listen(ListenTo.UpdateAttendance(course))
         }
     }
 
     private fun setViews() =activity?.let {
+        if(!it.getSharedPreferences(SHARED_PREF, Context.MODE_PRIVATE).getBoolean(KEY_CR,false)){
+            mView.AddEventBtn.visibility = View.GONE
+            mView.DeleteCourseBtn.visibility = View.GONE
+            mView.EditCourseBtn.visibility = View.GONE
+        }
         mView.CourseName.text = course.name
         mView.Credits.text = requireActivity().resources.getString(R.string.credits_disp,course.credit)
         mView.EventAttendance.text = requireActivity().resources.getString(R.string.attendenceWithPercent,course.attendance.toInt())

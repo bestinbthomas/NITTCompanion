@@ -16,18 +16,16 @@ import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
-import androidx.work.*
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.example.nittcompanion.MainNavigationDirections
 import com.example.nittcompanion.R
-import com.example.nittcompanion.background.AlertsChecker
 import com.example.nittcompanion.common.factoryAndInjector.InjectorUtils
 import com.example.nittcompanion.login.LoginActivity
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.nav_head.view.*
-import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -38,6 +36,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var eventFromNotiId : String? = null
     private var courseFromNotiId : String? = null
     private var isClassFromNoti = false
+    private lateinit var loadSnack : Snackbar
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -76,6 +75,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onStart() {
         super.onStart()
+        loadSnack = Snackbar.make(this.findViewById(android.R.id.content),"Loading ...",Snackbar.LENGTH_INDEFINITE)
         viewModel.listen(ListenTo.ActivityStarted)
         val user = when (val result = getCurrentUser()) {
             is Result.Value -> result.value
@@ -115,18 +115,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     viewModel.listen(ListenTo.NotificationTappedCourse(courseid))
                 }
             }
-            findNavController(R.id.HostFragment).navigate(R.id.destination_event_detail)
+            val direction = MainNavigationDirections.actionMainToDestinationEventDetail(true)
+            findNavController(R.id.HostFragment).navigate(direction)
         }
-        val constrain = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.CONNECTED)
-            .build()
-        val updateCourseRequest = PeriodicWorkRequestBuilder<AlertsChecker>(6,TimeUnit.DAYS,1,TimeUnit.DAYS)
-            .setConstraints(constrain)
-            .setBackoffCriteria(BackoffPolicy.LINEAR,1,TimeUnit.HOURS)
-            .build()
-
-        val workManager = WorkManager.getInstance(applicationContext)
-        workManager.enqueueUniquePeriodicWork(ALERTS_WORK_TAG,ExistingPeriodicWorkPolicy.KEEP,updateCourseRequest)
     }
 
     private fun setObservations() {
@@ -134,6 +125,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             this,
             Observer {
                 createSnackbar(it, Snackbar.LENGTH_LONG)
+            }
+        )
+        viewModel.loading.observe(
+            this,
+            Observer {
+                if(it)
+                    loadSnack.show()
+                else
+                    loadSnack.dismiss()
             }
         )
     }

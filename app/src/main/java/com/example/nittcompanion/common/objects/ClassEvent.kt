@@ -159,7 +159,6 @@ open class ClassEvent(var classes: HashMap<String, Int> = hashMapOf(),var islab 
                 enddate,
                 if (islab) TYPE_LAB else TYPE_CLASS,
                 courseId,
-                doneUpdate = false,
                 imp = false
             )
         }

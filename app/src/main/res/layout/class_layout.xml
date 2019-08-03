@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                                   xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                   android:orientation="vertical"
+                                                   android:layout_width="wrap_content"
+                                                   android:layout_height="wrap_content" android:id="@+id/class_root">
+
+    <Spinner
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/DepartmentSpin"
+            android:entries="@array/Departments"
+            android:textAlignment="center" app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/YearSpin" android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp" app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+    <Spinner
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/YearSpin"
+            android:entries="@array/Year"
+            android:textAlignment="center"
+            app:layout_constraintTop_toBottomOf="@+id/DepartmentSpin"
+            app:layout_constraintBottom_toTopOf="@+id/SectionSpin"
+            app:layout_constraintStart_toStartOf="@+id/DepartmentSpin"
+            app:layout_constraintEnd_toEndOf="@+id/DepartmentSpin" android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"/>
+    <Spinner
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/SectionSpin"
+            android:entries="@array/Section"
+            android:textAlignment="center"
+            app:layout_constraintTop_toBottomOf="@+id/YearSpin"
+            app:layout_constraintBottom_toTopOf="@+id/CrSwitch"
+            app:layout_constraintStart_toStartOf="@+id/YearSpin" app:layout_constraintEnd_toEndOf="@+id/YearSpin"
+            android:layout_marginTop="8dp" android:layout_marginBottom="8dp"/>
+    <Switch
+            android:text="@string/cr"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/CrSwitch"
+            android:switchPadding="8dp"
+            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintTop_toBottomOf="@+id/SectionSpin"
+            app:layout_constraintStart_toStartOf="@+id/SectionSpin"
+            app:layout_constraintEnd_toEndOf="@+id/SectionSpin" android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

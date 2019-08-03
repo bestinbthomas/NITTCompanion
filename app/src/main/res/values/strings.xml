@@ -60,6 +60,8 @@
     <string name="see_courses">See Courses</string>
     <string name="add_common_notes">Add Common Notes</string>
     <string name="see_events">See Events</string>
+    <string name="sign_in_text">Sign In</string>
+    <string name="cr">CR</string>
 
     <string-array name="Months">
         <item>January</item>
@@ -94,6 +96,33 @@
         <item>2:20 – 3:10</item>
         <item>3:30 – 4:20</item>
         <item>4:20 – 5:10</item>
+    </string-array>
+
+    <string-array name="Departments">
+        <item>Select Department</item>
+        <item>CSE</item>
+        <item>ECE</item>
+        <item>EEE</item>
+        <item>Mech</item>
+        <item>ICE</item>
+        <item>Civil</item>
+        <item>MME</item>
+        <item>Prod</item>
+        <item>Chem</item>
+    </string-array>
+
+    <string-array name="Year">
+        <item>Select Year</item>
+        <item>1st</item>
+        <item>2nd</item>
+        <item>3rd</item>
+        <item>4th</item>
+    </string-array>
+
+    <string-array name="Section">
+        <item>Select Section</item>
+        <item>A</item>
+        <item>B</item>
     </string-array>
 
 </resources>

@@ -13,7 +13,7 @@ import com.example.nittcompanion.R
 import com.example.nittcompanion.common.NOTE_UNLOADING
 import com.example.nittcompanion.common.NOTE_UPLOADED_SUCESS
 
-class NotesRecyclerAdapter(private val context : Context,private val notes : MutableList<Note>,val noteSelectLiveData: MutableLiveData<Int> = MutableLiveData()) :RecyclerView.Adapter<NotesRecyclerAdapter.Holder>() {
+class NotesRecyclerAdapter(private val context : Context,private val notes : MutableList<Note>,val noteSelectLiveData: MutableLiveData<Int> = MutableLiveData(),val noteLongPressLiveData: MutableLiveData<Int> = MutableLiveData()) :RecyclerView.Adapter<NotesRecyclerAdapter.Holder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         val inflator = LayoutInflater.from(parent.context)
         return Holder(inflator.inflate(R.layout.note_item,parent,false))
@@ -34,6 +34,10 @@ class NotesRecyclerAdapter(private val context : Context,private val notes : Mut
         )
         holder.layoutCard.setOnClickListener {
             noteSelectLiveData.value = position
+        }
+        holder.layoutCard.setOnLongClickListener {
+            noteLongPressLiveData.value = position
+            true
         }
     }
 

@@ -23,8 +23,8 @@ import kotlinx.android.synthetic.main.fragment_home.view.*
 
 class HomeFragment : Fragment() {
     private lateinit var viewModel: BaseViewModel
-    private var adapter: EventsRecyclerAdapter = EventsRecyclerAdapter(listOf())
-    private var events = listOf<Event>()
+    private var adapter: EventsRecyclerAdapter = EventsRecyclerAdapter(mutableListOf())
+    private var events = mutableListOf<Event>()
     private lateinit var mView :View
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_home,container,false)

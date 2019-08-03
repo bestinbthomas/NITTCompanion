@@ -13,7 +13,6 @@ data class Event(var name:String = "",
                  var type : String ="",
                  var courceid: String = "",
                  @set:Exclude @get:Exclude var ID : String = startDate.toString(),
-                 var doneUpdate :Boolean = false,
                  var imp  : Boolean = false) {
     var month : String = Calendar.getInstance().getCalEnderWithMillis(startDate).getMonthInFormat()
     var date : String = Calendar.getInstance().getCalEnderWithMillis(startDate).getDateInFormat()

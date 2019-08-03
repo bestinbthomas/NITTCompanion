@@ -21,13 +21,13 @@
               app:layout_constraintStart_toStartOf="parent"
               android:layout_marginEnd="16dp"
               android:layout_marginStart="16dp"
-              android:text="@string/common_signin_button_text_long"
+              android:text="@string/sign_in_text"
               android:textAllCaps="false"
-              android:background="@drawable/common_google_signin_btn_text_light_focused"
-              android:textColor="@color/secondaryTextColor"
               android:id="@+id/LoginBtn"
               android:layout_marginBottom="112dp" app:layout_constraintBottom_toBottomOf="@+id/imageView"
-              android:gravity="center_horizontal|center_vertical"/>
+              android:gravity="center_horizontal|center_vertical"
+              android:background="@drawable/common_google_signin_btn_icon_light_normal_background"
+              android:textSize="18sp" style="@style/MyTextButton"/>
     <TextView
             android:text="@string/Welcome"
             android:layout_width="wrap_content"

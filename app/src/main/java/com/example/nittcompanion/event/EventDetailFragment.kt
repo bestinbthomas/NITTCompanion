@@ -1,5 +1,6 @@
 package com.example.nittcompanion.event
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.example.nittcompanion.R
 import com.example.nittcompanion.common.*
 import com.example.nittcompanion.common.factoryAndInjector.InjectorUtils
@@ -21,6 +23,7 @@ class EventDetailFragment : Fragment() {
     private  lateinit var course: Course
     private lateinit var viewModel: BaseViewModel
     private lateinit var mView : View
+    private val args : EventDetailFragmentArgs by navArgs()
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_event_detail,container,false)
     }
@@ -41,6 +44,11 @@ class EventDetailFragment : Fragment() {
     private fun setViews() =activity?.let {
 
 
+        if(!it.getSharedPreferences(SHARED_PREF, Context.MODE_PRIVATE).getBoolean(KEY_CR,false)) {
+            mView.CancelEvent.visibility = View.GONE
+            if(event.type != TYPE_OTHER)
+                mView.EditEvent.visibility = View.GONE
+        }
         mView.EventDetailName.text = event.name
         mView.Date.text = Calendar.getInstance().getCalEnderWithMillis(event.startDate).getDateInFormat()
         mView.EventStartTime.text = Calendar.getInstance().getCalEnderWithMillis(event.startDate).getTimeInFormat()
@@ -49,7 +57,7 @@ class EventDetailFragment : Fragment() {
             mView.attendanceTxt.visibility = View.VISIBLE
             mView.EventAttendance.text = requireActivity().resources.getString(R.string.attendenceWithPercent,course.attendance.toInt())
             mView.EventAttendance.visibility = View.VISIBLE
-            if (!event.doneUpdate && event.endDate <= Calendar.getInstance().timeInMillis) {
+            if (args.showCard) {
                 mView.DidYouAttendCard.visibility = View.VISIBLE
 
             } else {

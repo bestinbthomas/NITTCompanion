@@ -8,11 +8,11 @@ data class Course(var name : String = "",
                   var credit : Int = 0,
                   var classEvent : ClassEvent = ClassEvent(islab = false),
                   @set:Exclude @get:Exclude var ID : String = Calendar.getInstance().timeInMillis.toString(),
-                  var lastEventCreated : Long = 0) {
+                  var lastEventCreated : Long = 0,
+                  var attended : Int = 0,
+                  var notAttended : Int = 0) {
 
 
-    var notAttended : Int = 0
-    var attended : Int = 0
     @get:Exclude
     val attendance : Float get() = attended.toFloat()/(attended+notAttended).toFloat() *100
     @set:Exclude @get:Exclude

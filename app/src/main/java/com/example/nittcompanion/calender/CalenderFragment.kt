@@ -109,7 +109,7 @@ class CalenderFragment : Fragment() {
 
     private fun setRecyclerView() = activity?.let {
         val events = viewModel.SelectableEvents.value
-        RecAdapter = EventsRecyclerAdapter(events ?: listOf())
+        RecAdapter = EventsRecyclerAdapter(events?: listOf()  )
         RecAdapter.eventClickListener.observe(
             this,
             Observer {

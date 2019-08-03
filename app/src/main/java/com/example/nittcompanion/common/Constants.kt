@@ -23,6 +23,7 @@ const val ERROR_REMOVING_COURSE = "Error removing Course"
 const val FIREBASE_COLLECTION_NOTES = "Notes"
 const val FIREBASE_COLLECTION_COURSES = "Courses"
 const val FIREBASE_COLLECTION_EVENTS = "Events"
+const val FIREBASE_COLLECTION_ATTENDANCE = "Attendance"
 
 const val NOTE_UPLOADED_SUCESS = 1
 const val NOTE_UPLOADED_FAIL = -1
@@ -38,9 +39,13 @@ const val KEY_COURSE_ID = "eventCourseID"
 const val KEY_EVENT_NAME = "eventName"
 const val KEY_IS_CLASS = "isThisClass"
 const val KEY_ACTION = "action"
+const val KEY_CLASS = "class"
+const val KEY_CR = "isRep"
 
 const val ALERTS_WORK_TAG = "check_alerts"
 
 const val NOTIFICATION_CHANNEL_EVENT_ID = "Event Reminder"
 const val NOTIFICATION_NOTIFICATION_EVENT_ID = 1357
 const val NOTIFICATION_CHANNEL_CLASS_ID = "Class Reminder"
+
+const val SHARED_PREF = "sharedpref"

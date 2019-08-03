@@ -51,6 +51,7 @@
                     android:resource="@xml/provider_paths"/>
         </provider>
         <receiver android:name=".notification.NotifyAlert"/>
+        <!--<service android:name=".background.ClassesChecker"/>-->
     </application>
 
 </manifest>
